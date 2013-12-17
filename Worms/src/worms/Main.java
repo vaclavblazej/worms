@@ -1,23 +1,30 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package worms;
 
-import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 /**
  *
  * @author Pajcak & Venca
  */
 public class Main {
+
     private static MainWindow mainWindow;
-    /**
-     * @param args the command line arguments
-     */
+    private static GameWindow gameWindow;
+
     public static void main(String[] args) {
-        // TODO code application logic here
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                initMenu();
+            }
+        });
+    }
+
+    public static void initMenu() {
         mainWindow = new MainWindow();
-        mainWindow.showMe();      
+    }
+
+    public static void initGame() {
+        gameWindow = new GameWindow();
     }
 }

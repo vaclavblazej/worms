@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package worms;
 
 import java.awt.Color;
@@ -19,16 +15,13 @@ public class GameWindow extends JFrame implements KeyListener {
 
     private static GamePanel gamePlane;
 
-    /**
-     * @param args the command line arguments
-     */
-    public void StartSelf (/*LinkedList<Elem> controls, etc.*/) {
-        
+    public GameWindow (/*LinkedList<Elem> controls, etc.*/) {
+        super("Cervi 1.0");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         setResizable(false);
-        LinkedList<Elem> controls = new LinkedList<>();
         
+        LinkedList<Elem> controls = new LinkedList<>();
         controls.add(new Elem(65, 68, Color.RED));
         controls.add(new Elem(37, 39, Color.GREEN));
         //controls.add(new Elem(99, 105, Color.BLUE));
@@ -36,13 +29,12 @@ public class GameWindow extends JFrame implements KeyListener {
         gamePlane = new GamePanel(controls);
         gamePlane.setPreferredSize(new Dimension(800, 600));
         gamePlane.setFocusable(true);
-        setTitle("Cervi 1.0");
         add(gamePlane);
         pack();
 
         gamePlane.startMoving();
-
-        addKeyListener(new GameWindow());
+        setFocusable(true);
+        addKeyListener(this);
     }
 
     @Override

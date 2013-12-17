@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templaqtes
- * and open the template in the editor.
- */
 package worms;
 
 import java.awt.Graphics;
