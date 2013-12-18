@@ -1,5 +1,6 @@
 package worms;
 
+import java.util.LinkedList;
 import javax.swing.SwingUtilities;
 
 /**
@@ -24,7 +25,7 @@ public class Main {
         mainWindow = new MainWindow();
     }
 
-    public static void initGame() {
-        gameWindow = new GameWindow();
+    public static void initGame(LinkedList <Elem> controls) {
+        gameWindow = new GameWindow(controls);
     }
 }

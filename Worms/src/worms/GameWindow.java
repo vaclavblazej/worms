@@ -15,17 +15,17 @@ public class GameWindow extends JFrame implements KeyListener {
 
     private static GamePanel gamePlane;
 
-    public GameWindow (/*LinkedList<Elem> controls, etc.*/) {
+    public GameWindow(LinkedList<Elem> controls) {
         super("Cervi 1.0");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         setResizable(false);
-        
-        LinkedList<Elem> controls = new LinkedList<>();
-        controls.add(new Elem(65, 68, Color.RED));
-        controls.add(new Elem(37, 39, Color.GREEN));
+
+        //LinkedList<Elem> controls = new LinkedList<>();
+        //controls.add(new Elem(65, 68, Color.RED));
+        //controls.add(new Elem(37, 39, Color.GREEN));
         //controls.add(new Elem(99, 105, Color.BLUE));
-        
+
         gamePlane = new GamePanel(controls);
         gamePlane.setPreferredSize(new Dimension(800, 600));
         gamePlane.setFocusable(true);
