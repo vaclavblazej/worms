@@ -24,10 +24,7 @@ public class MainWindow extends JFrame {
         setTitle("Cervi 1.0");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
-        setLayout(new FlowLayout());
-
-        mainPanel = new JPanel();
-        mainPanel.setPreferredSize(new Dimension(300, 400));
+        setLayout(new BorderLayout());
 
         JButton playButton = new JButton("Play!");
         playButton.addActionListener(new ActionListener() {
@@ -37,11 +34,10 @@ public class MainWindow extends JFrame {
             }
         });
 
-        mainPanel.add(playButton);
-        add(mainPanel);
+        add(playButton, BorderLayout.NORTH);
         
         playerMenuPanel = new PlayerMenuPanel(MAXIMUM_PLAYERS);
-        add(playerMenuPanel);
+        add(playerMenuPanel, BorderLayout.CENTER);
 
         pack();
         setLocationRelativeTo(null);
