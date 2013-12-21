@@ -1,9 +1,10 @@
 package worms;
 
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 /**
@@ -12,27 +13,36 @@ import javax.swing.JPanel;
  */
 public class PlayerMenuPanel extends JPanel {
 
-    LinkedList<PlayerSetupComponent> components;
+    JComboBox<Integer> players;
+    ArrayList<PlayerSetupComponent> components;
 
     public PlayerMenuPanel(int numberOfPlayers) {
         setLayout(new GridLayout(numberOfPlayers, 1));
-        components = new LinkedList<>();
-        for (int i = 0; i < numberOfPlayers; i++) {
-            PlayerSetupComponent c = new PlayerSetupComponent();
-            add(c);
-            components.add(c);
+        components = new ArrayList<>(numberOfPlayers);
+        Integer[] txt = new Integer[numberOfPlayers - 1];
+        for (int i = 0; i < numberOfPlayers - 1; i++) {
+            txt[i] = i + 2;
+        }
+        players = new JComboBox<>(txt);
+        add(players);
+        components.add(new PlayerSetupComponent("Player 1: < >", 65, 68, Color.RED));
+        components.add(new PlayerSetupComponent("Player 2: A D", 37, 39, Color.GREEN));
+        components.add(new PlayerSetupComponent("Player 3: 3 9", 99, 105, Color.CYAN));
+        components.add(new PlayerSetupComponent("Player 4: J L", 74, 76, Color.PINK));
+        components.add(new PlayerSetupComponent("Player 5: V B", 86, 66, Color.ORANGE));
+        for (PlayerSetupComponent pl : components) {
+            add(pl);
         }
     }
 
     public LinkedList<Elem> getControls() {
         LinkedList<Elem> controls = new LinkedList<>();
-        /*for (PlayerSetupComponent tmp : components) {
-            controls.add(tmp.getPlayerControls());
-        }*/
-        // TODO - create controls from set variables, they will propagate properly into game window
-        controls.add(new Elem(65, 68, Color.RED));
-        controls.add(new Elem(37, 39, Color.GREEN));
-
+        Integer i = players.getItemAt(players.getSelectedIndex());
+        System.out.println("i: " + i);
+        for (int j = 0; j < i; j++) {
+            components.get(j).getPlayerControls();
+            controls.add(components.get(j).getPlayerControls());
+        }
         return controls;
     }
 }

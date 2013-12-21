@@ -1,8 +1,7 @@
 package worms;
 
 import java.awt.Color;
-import java.util.Vector;
-import javax.swing.JComboBox;
+import java.awt.FlowLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -13,18 +12,20 @@ import javax.swing.JPanel;
 public class PlayerSetupComponent extends JPanel {
 
     private JLabel label;
-    private JComboBox<String> box;
+    private int left, right;
+    private Color color;
 
-    public PlayerSetupComponent() {
-        setBackground(Color.yellow);
-        label = new JLabel("Player: ");
+    public PlayerSetupComponent(String str, int left, int right, Color color) {
+        setBackground(color);
+        this.left = left;
+        this.right = right;
+        this.color = color;
+        setLayout(new FlowLayout());
+        label = new JLabel(str);
         add(label);
-        box = new JComboBox<>();
-        add(box);
     }
 
     public Elem getPlayerControls() {
-        //todo
-        return null;
+        return new Elem(left, right, color);
     }
 }

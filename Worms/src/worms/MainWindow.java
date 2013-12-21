@@ -1,8 +1,6 @@
 package worms;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -18,7 +16,7 @@ public class MainWindow extends JFrame {
     private static JPanel mainPanel;
     private static GameWindow gameWindow;
     private static PlayerMenuPanel playerMenuPanel;
-    private static final int MAXIMUM_PLAYERS = 6;
+    private static final int MAXIMUM_PLAYERS = 5;
 
     public MainWindow() {
         setTitle("Cervi 1.0");
@@ -35,7 +33,7 @@ public class MainWindow extends JFrame {
         });
 
         add(playButton, BorderLayout.NORTH);
-        
+
         playerMenuPanel = new PlayerMenuPanel(MAXIMUM_PLAYERS);
         add(playerMenuPanel, BorderLayout.CENTER);
 

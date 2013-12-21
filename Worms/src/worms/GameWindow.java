@@ -1,6 +1,5 @@
 package worms;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -21,11 +20,6 @@ public class GameWindow extends JFrame implements KeyListener {
         setVisible(true);
         setResizable(false);
 
-        //LinkedList<Elem> controls = new LinkedList<>();
-        //controls.add(new Elem(65, 68, Color.RED));
-        //controls.add(new Elem(37, 39, Color.GREEN));
-        //controls.add(new Elem(99, 105, Color.BLUE));
-
         gamePlane = new GamePanel(controls);
         gamePlane.setPreferredSize(new Dimension(800, 600));
         gamePlane.setFocusable(true);
@@ -43,6 +37,7 @@ public class GameWindow extends JFrame implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent ke) {
+        System.out.println(ke.getKeyCode());
         gamePlane.setDirection(ke.getKeyCode(), true);
     }
 

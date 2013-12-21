@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 /**
@@ -20,13 +21,28 @@ import javax.swing.Timer;
  */
 public class GamePanel extends JPanel implements ActionListener {
 
+    private static final int STEPS_IN_TICK = 2;
     private ArrayList<Worm> worms;
     private Map<Integer, Worm> leftMap;
     private Map<Integer, Worm> rightMap;
     private LinkedList<Elem> controls;
     private BufferedImage image;
     private Timer timer;
-    private static final int STEPS_IN_TICK = 2;
+
+    public GamePanel(LinkedList<Elem> controls) {
+        this.controls = controls;
+        leftMap = new HashMap<>();
+        rightMap = new HashMap<>();
+        worms = new ArrayList<>();
+        timer = new Timer(10, this);
+        // when invokeLater is not used, first game is spoiled by bug
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                init();
+            }
+        });
+    }
 
     public void setDirection(int keyNum, boolean val) {
         if (leftMap.get(keyNum) != null) {
@@ -40,15 +56,6 @@ public class GamePanel extends JPanel implements ActionListener {
         timer.start();
     }
 
-    public GamePanel(LinkedList<Elem> controls) {
-        this.controls = controls;
-        leftMap = new HashMap<>();
-        rightMap = new HashMap<>();
-        worms = new ArrayList<>();
-        timer = new Timer(10, this);
-        init();
-    }
-
     public void init() {
         image = new BufferedImage(801, 601, BufferedImage.TYPE_INT_RGB);
         worms.clear();
@@ -56,11 +63,13 @@ public class GamePanel extends JPanel implements ActionListener {
         rightMap.clear();
         int degreeChange = 360 / controls.size();
         int degree = 0;
+        int midX = getWidth() / 2;
+        int midY = getHeight() / 2;
         for (Elem elem : controls) {
-            Worm worm = new Worm(300, 350, degree, elem.color);
+            Worm worm = new Worm(midX, midY, degree, elem.color);
             worms.add(worm);
-            leftMap.put(elem.a, worm);
-            rightMap.put(elem.b, worm);
+            leftMap.put(elem.left, worm);
+            rightMap.put(elem.right, worm);
             degree += degreeChange;
         }
     }

@@ -12,12 +12,12 @@ import java.awt.Color;
  */
 public class Elem {
 
-    public Elem(int a, int b, Color color) {
-        this.a = a;
-        this.b = b;
+    public Elem(int left, int right, Color color) {
+        this.left = left;
+        this.right = right;
         this.color = color;
     }
-    public int a;
-    public int b;
+    public int left;
+    public int right;
     public Color color;
 }

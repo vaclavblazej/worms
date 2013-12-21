@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package worms;
 
 import java.awt.Color;
@@ -16,6 +12,7 @@ import java.util.Random;
  */
 public class Worm {
     //mods
+
     private boolean throughWalls = false;
     //--------------------
     private static final int SIZE = 6;
@@ -36,11 +33,6 @@ public class Worm {
     private Color color;
     private int change;
 
-    /**
-     *
-     * @param x
-     * @param y
-     */
     public Worm(int x, int y, int angle, Color color) {
         position = new Point.Double(x, y);
         this.color = color;
@@ -49,10 +41,6 @@ public class Worm {
         change = SLOW;
     }
 
-    /**
-     *
-     * @param i
-     */
     public void tick(BufferedImage i) {
         Point.Double tmp = new Point.Double();
         tmp.x = position.x;
@@ -66,7 +54,7 @@ public class Worm {
         } else if (angle < 0) {
             angle += 360;
         }
-        
+
         counter += change; // counting time to generate next worm division
         if (counter > INTERVAL) {
             counter = 0;
@@ -79,21 +67,35 @@ public class Worm {
         if (change == SLOW) {
             int x = (int) (position.x + 2 * Math.cos(Math.toRadians(angle)));
             int y = (int) (position.y - 2 * Math.sin(Math.toRadians(angle)));
-            
+
             if (throughWalls) {
-                if (!(x < 800 && x > 0)) { if (tmp.x < 10) {position.x = 798; tmp.x = 799;} else {position.x = 2; tmp.x=1;}}
-                    else if (!(y < 600 && y > 0)) { if (tmp.y < 10) {position.y = 598; tmp.y = 599;} else {position.y = 2; tmp.y=1;}}
-                        else if (i.getRGB(x, y) != Color.BLACK.getRGB()) {
-                                crash = true;
+                if (!(x < 800 && x > 0)) {
+                    if (tmp.x < 10) {
+                        position.x = 798;
+                        tmp.x = 799;
+                    } else {
+                        position.x = 2;
+                        tmp.x = 1;
+                    }
+                } else if (!(y < 600 && y > 0)) {
+                    if (tmp.y < 10) {
+                        position.y = 598;
+                        tmp.y = 599;
+                    } else {
+                        position.y = 2;
+                        tmp.y = 1;
+                    }
+                } else if (i.getRGB(x, y) != Color.BLACK.getRGB()) {
+                    crash = true;
                 }
             } else {
                 if (x > 800 || x <= 0
-                    || y > 600 || y <= 0
-                    || i.getRGB(x, y) != Color.BLACK.getRGB()) {
+                        || y > 600 || y <= 0
+                        || i.getRGB(x, y) != Color.BLACK.getRGB()) {
                     crash = true;
-                }   
+                }
             }
-            
+
             new MyLine(tmp, position).draw(i, color);
         }
 
@@ -108,10 +110,6 @@ public class Worm {
         right = val;
     }
 
-    /**
-     *
-     * @return
-     */
     public void draw(Graphics2D g) {
         if (counter + WARNING > INTERVAL) {
             g.setColor(Color.WHITE);
@@ -124,8 +122,4 @@ public class Worm {
     public boolean isCrash() {
         return crash;
     }
-    /**
-     *
-     * @param i
-     */
 }
