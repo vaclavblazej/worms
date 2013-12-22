@@ -10,7 +10,7 @@ import java.util.Random;
  *
  * @author Pajcak & Venca
  */
-public class Worm {
+public final class Worm {
     //mods
 
     private boolean throughWalls = false;
@@ -22,23 +22,34 @@ public class Worm {
     private static final int FAST = 10;
     private static final int SLOW = 1;
     private static final int STEP = 1;
-    private int counter;
     private static final int ROTATION = 2 * STEP;
     public static final int LENGTH = 2;
+    private int counter;
     private Point.Double position;
-    private int angle = 0;
-    private boolean crash = false;
+    private int originalAngle;
+    private int angle;
+    private boolean crash;
     private boolean left;
     private boolean right;
     private Color color;
     private int change;
+    private Score score;
 
     public Worm(int x, int y, int angle, Color color) {
-        position = new Point.Double(x, y);
         this.color = color;
-        this.angle = angle;
+        this.originalAngle = angle;
         counter = new Random().nextInt(INTERVAL); // random time interval to generate first worm division
         change = SLOW;
+        score = new Score(0, color);
+        left = false;
+        right = false;
+        reset(x, y);
+    }
+
+    public void reset(int x, int y) {
+        position = new Point.Double(x, y);
+        this.angle = originalAngle;
+        crash = false;
     }
 
     public void tick(BufferedImage i) {
@@ -117,6 +128,15 @@ public class Worm {
             g.setColor(color);
         }
         g.fillOval((int) position.x - HALF, (int) position.y - HALF, SIZE, SIZE);
+    }
+
+    public void increaseScore() {
+        
+        score.points++;
+    }
+
+    public Score getScore() {
+        return score;
     }
 
     public boolean isCrash() {

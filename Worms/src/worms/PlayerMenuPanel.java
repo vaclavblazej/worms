@@ -38,7 +38,6 @@ public class PlayerMenuPanel extends JPanel {
     public LinkedList<Elem> getControls() {
         LinkedList<Elem> controls = new LinkedList<>();
         Integer i = players.getItemAt(players.getSelectedIndex());
-        System.out.println("i: " + i);
         for (int j = 0; j < i; j++) {
             components.get(j).getPlayerControls();
             controls.add(components.get(j).getPlayerControls());

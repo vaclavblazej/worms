@@ -37,7 +37,6 @@ public class GameWindow extends JFrame implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent ke) {
-        System.out.println(ke.getKeyCode());
         gamePlane.setDirection(ke.getKeyCode(), true);
     }
 
