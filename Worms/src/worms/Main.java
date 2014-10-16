@@ -1,7 +1,9 @@
 package worms;
 
-import java.util.LinkedList;
-import javax.swing.SwingUtilities;
+import worms.controller.Controller;
+import worms.model.Model;
+import worms.view.GameWindow;
+import worms.view.MainWindow;
 
 /**
  *
@@ -11,21 +13,22 @@ public class Main {
 
     private static MainWindow mainWindow;
     private static GameWindow gameWindow;
+    private static Settings settings;
+    private static Model model;
+    private static Controller controller;
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                initMenu();
-            }
-        });
+        settings = new Settings();
+        model = new Model(settings);
+        controller = new Controller(model, settings);
+        initMenu();
     }
 
     public static void initMenu() {
-        mainWindow = new MainWindow();
+        mainWindow = new MainWindow(model, settings);
     }
 
-    public static void initGame(LinkedList <Elem> controls) {
-        gameWindow = new GameWindow(controls);
+    public static void initGame() {
+        gameWindow = new GameWindow(model, controller, settings);
     }
 }
