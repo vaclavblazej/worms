@@ -1,6 +1,8 @@
 package worms.view;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -9,33 +11,42 @@ import worms.model.Model;
 
 /**
  *
- * @author Skarab
+ * @author Patrik Faistaver
+ * @author Václav Blažej
+ * @author Štěpán Plachý
  */
 public class PlayerMenuPanel extends JPanel {
 
-    JComboBox<Integer> choosePlayerCount;
-    ArrayList<PlayerSetupComponent> components;
+    private final JComboBox<Integer> choosePlayerCount;
+    private final ArrayList<PlayerSetupComponent> components;
+    private final Model model;
+    private final Settings settings;
 
-    public PlayerMenuPanel(Model model, Settings settings) {
-        Integer numberOfPlayers = settings.getPlayerCount();
-        setLayout(new GridLayout(numberOfPlayers / 2 + 1, 1));
-        components = new ArrayList<>(numberOfPlayers);
-        Integer[] txt = new Integer[numberOfPlayers - 1];
-        for (int i = 0; i < numberOfPlayers - 1; i++) {
+    public PlayerMenuPanel(Model model, final Settings settings) {
+        this.model = model;
+        this.settings = settings;
+        Integer maximumNumberOfPlayers = settings.getMaximumPlayerCount();
+        setLayout(new GridLayout(maximumNumberOfPlayers / 2 + 1, 1));
+        components = new ArrayList<>(maximumNumberOfPlayers);
+        Integer[] txt = new Integer[maximumNumberOfPlayers - 1];
+        for (int i = 0; i < maximumNumberOfPlayers - 1; i++) {
             txt[i] = i + 2;
         }
         choosePlayerCount = new JComboBox<>(txt);
         add(choosePlayerCount);
-        for (int i = 0; i < numberOfPlayers; i++) {
-            components.add(new PlayerSetupComponent(model, i));
+        choosePlayerCount.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                final Integer playerCount = (Integer) choosePlayerCount.getSelectedItem();
+                settings.setPlayerCount(playerCount);
+            }
+        });
+        choosePlayerCount.setSelectedIndex(0);
+        for (int i = 0; i < maximumNumberOfPlayers; i++) {
+            components.add(new PlayerSetupComponent(settings, i));
         }
         for (PlayerSetupComponent pl : components) {
             add(pl);
         }
-        //"Player 1: < >", 65, 68, Color.RED
-        //components.add(new PlayerSetupComponent("Player 2: A D", 37, 39, Color.GREEN));
-        //components.add(new PlayerSetupComponent("Player 3: 3 9", 99, 105, Color.CYAN));
-        //components.add(new PlayerSetupComponent("Player 4: J L", 74, 76, Color.PINK));
-        //components.add(new PlayerSetupComponent("Player 5: V B", 86, 66, Color.ORANGE));
     }
 }

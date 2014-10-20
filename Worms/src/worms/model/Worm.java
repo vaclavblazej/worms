@@ -1,14 +1,16 @@
 package worms.model;
 
-import java.awt.Color;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 
 /**
  *
- * @author Pajcak & Venca
+ * @author Patrik Faistaver
+ * @author Václav Blažej
+ * @author Štěpán Plachý
  */
 public final class Worm {
+
     private Point.Double position;
     private int angle;
     private Direction direction;

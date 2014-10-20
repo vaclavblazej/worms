@@ -10,29 +10,32 @@ import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import worms.Settings;
 import worms.controller.Controller;
 import worms.model.Model;
 import worms.model.Player;
 
 /**
  *
- * @author Pajcak & Venca
+ * @author Patrik Faistaver
+ * @author Václav Blažej
+ * @author Štěpán Plachý
  */
 public class View extends JPanel implements ActionListener {
 
-    private static final int STEPS_IN_TICK = 3;
-    private Timer timer;
-    private Point origin;
-    private Model model;
-    private Controller controller;
+    private final Timer timer;
+    private final Model model;
+    private final Controller controller;
+    private final Settings settings;
 
     public Model getModel() {
         return model;
     }
 
-    public View(Model model, Controller controllerArg) {
+    public View(Model model, Controller controllerArg, Settings settings) {
         this.model = model;
         this.controller = controllerArg;
+        this.settings = settings;
         this.timer = new Timer(40, this);
         // when invokeLater is not used, first game is spoiled by bug
         SwingUtilities.invokeLater(new Runnable() {

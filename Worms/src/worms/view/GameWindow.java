@@ -9,7 +9,9 @@ import worms.model.Model;
 
 /**
  *
- * @author Pajcak & Venca
+ * @author Patrik Faistaver
+ * @author Václav Blažej
+ * @author Štěpán Plachý
  */
 public class GameWindow extends JFrame {
 
@@ -21,14 +23,14 @@ public class GameWindow extends JFrame {
         setVisible(true);
         setResizable(false);
 
-        gamePlane = new View(model, controller);
+        gamePlane = new View(model, controller, settings);
         gamePlane.setPreferredSize(new Dimension(800, 600));
         gamePlane.setFocusable(true);
         add(gamePlane);
         pack();
 
         setFocusable(true);
-        
+
         Input input = new Input(model, settings);
         this.addKeyListener(input);
         gamePlane.addKeyListener(input);

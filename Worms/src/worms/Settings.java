@@ -6,17 +6,22 @@ import java.util.ArrayList;
 
 /**
  *
+ * @author Patrik Faistaver
  * @author Václav Blažej
+ * @author Štěpán Plachý
  */
 public final class Settings implements Serializable {
 
     private boolean loaded = false;
     private int playerCount;
+    private int maximumPlayerCount;
     private int timeBetweenPhaseShifts;
     private int phaseShiftDuration;
     private int phaseShiftHeadsUpTime;
     private int windowWidth;
     private int windowHeight;
+
+    private int moveAngleChange;
     private final ArrayList<String> names;
     private final ArrayList<Integer> leftMap;
     private final ArrayList<Integer> rightMap;
@@ -25,11 +30,13 @@ public final class Settings implements Serializable {
 
     public Settings() {
         playerCount = 0;
-        timeBetweenPhaseShifts = 20;
-        phaseShiftDuration = 5;
-        phaseShiftHeadsUpTime = 2;
+        maximumPlayerCount = 5;
+        timeBetweenPhaseShifts = 100;
+        phaseShiftDuration = 15;
+        phaseShiftHeadsUpTime = 5;
         windowWidth = 800;
         windowHeight = 600;
+        moveAngleChange = 2;
         names = new ArrayList<>();
         leftMap = new ArrayList<>();
         rightMap = new ArrayList<>();
@@ -48,6 +55,14 @@ public final class Settings implements Serializable {
         rightMap.add(rightKey);
         colors.add(color);
         playerCount++;
+    }
+
+    public int getMoveAngleChange() {
+        return moveAngleChange;
+    }
+
+    public void setMoveAngleChange(int moveAngleChange) {
+        this.moveAngleChange = moveAngleChange;
     }
 
     public boolean isLoaded() {
@@ -122,4 +137,11 @@ public final class Settings implements Serializable {
         this.playerCount = playerCount;
     }
 
+    public int getMaximumPlayerCount() {
+        return maximumPlayerCount;
+    }
+
+    public void setMaximumPlayerCount(int maximumPlayerCount) {
+        this.maximumPlayerCount = maximumPlayerCount;
+    }
 }

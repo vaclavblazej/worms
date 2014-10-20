@@ -7,7 +7,9 @@ import worms.view.MainWindow;
 
 /**
  *
- * @author Pajcak & Venca
+ * @author Patrik Faistaver
+ * @author Václav Blažej
+ * @author Štěpán Plachý
  */
 public class Main {
 
@@ -29,6 +31,7 @@ public class Main {
     }
 
     public static void initGame() {
+        model.initialize();
         gameWindow = new GameWindow(model, controller, settings);
     }
 }

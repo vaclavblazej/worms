@@ -18,14 +18,16 @@ import worms.view.View;
 
 /**
  *
+ * @author Patrik Faistaver
  * @author Václav Blažej
+ * @author Štěpán Plachý
  */
 public class Controller implements ActionListener {
 
-    private Model model;
-    private Settings settings;
-    private Timer timer;
-    private ArrayList<Player> playingPlayers;
+    private final Model model;
+    private final Settings settings;
+    private final Timer timer;
+    private final ArrayList<Player> playingPlayers;
 
     public Controller(Model model, Settings settings) {
         this.model = model;
@@ -49,10 +51,10 @@ public class Controller implements ActionListener {
 
             switch (worm.getDirection()) {
                 case LEFT:
-                    angle += 2;
+                    angle += settings.getMoveAngleChange();
                     break;
                 case RIGHT:
-                    angle -= 2;
+                    angle -= settings.getMoveAngleChange();
                     break;
                 case STRAIGHT:
                     break;
@@ -64,14 +66,16 @@ public class Controller implements ActionListener {
             }
             worm.setAngle(angle);
 
-            worm.decreasePhaseShiftTimer(10);
+            worm.decreasePhaseShiftTimer(1);
             int time = worm.getPhaseShiftTimer();
-            if (time > 0) {
-                if (worm.isPhaseShifted()) {
+            if (time < 0) {
+                boolean shift = worm.isPhaseShifted();
+                if (shift) {
                     worm.setPhaseShiftTimer(settings.getTimeBetweenPhaseShifts());
                 } else {
                     worm.setPhaseShiftTimer(settings.getPhaseShiftDuration());
                 }
+                worm.setPhaseShift(!shift);
             }
             if (!worm.isPhaseShifted()) {
                 int distance = 2;

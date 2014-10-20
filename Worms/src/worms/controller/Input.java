@@ -11,15 +11,17 @@ import worms.model.Model;
 
 /**
  *
+ * @author Patrik Faistaver
  * @author Václav Blažej
+ * @author Štěpán Plachý
  */
 public class Input implements KeyListener {
 
-    private Map<Integer, Integer> leftMap;
-    private Map<Integer, Integer> rightMap;
-    private ArrayList<Boolean> leftPressed;
-    private ArrayList<Boolean> rightPressed;
-    private Model model;
+    private final Map<Integer, Integer> leftMap;
+    private final Map<Integer, Integer> rightMap;
+    private final ArrayList<Boolean> leftPressed;
+    private final ArrayList<Boolean> rightPressed;
+    private final Model model;
 
     public Input(Model model, Settings settings) {
         this.model = model;

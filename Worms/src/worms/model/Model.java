@@ -10,22 +10,28 @@ import worms.Settings;
 
 /**
  *
+ * @author Patrik Faistaver
  * @author Václav Blažej
+ * @author Štěpán Plachý
  */
-public class Model {
+public final class Model {
 
-    private ArrayList<Player> players;
+    private final ArrayList<Player> players;
     private BufferedImage image;
     private final Point.Double origin;
-    private Settings settings;
+    private final Settings settings;
 
     public Model(Settings settings) {
         this.settings = settings;
-        players = new ArrayList<>(settings.getPlayerCount());
-        for (int i = 0; i < settings.getPlayerCount(); i++) {
+        players = new ArrayList<>(settings.getMaximumPlayerCount());
+        origin = new Point.Double(settings.getWindowWidth() / 2, settings.getWindowHeight() / 2);
+    }
+    
+    public void initialize(){
+        final int playerCount = settings.getPlayerCount();
+        for (int i = 0; i < playerCount; i++) {
             players.add(new Player(settings.getNames().get(i), settings.getColors().get(i)));
         }
-        origin = new Point.Double(settings.getWindowWidth() / 2, settings.getWindowHeight() / 2);
         reset();
     }
 

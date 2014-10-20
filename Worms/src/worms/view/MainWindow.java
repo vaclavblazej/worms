@@ -5,10 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import worms.Main;
 import worms.Settings;
-import worms.controller.Controller;
 import worms.model.Model;
 
 /**
@@ -17,10 +15,7 @@ import worms.model.Model;
  */
 public class MainWindow extends JFrame {
 
-    private static JPanel mainPanel;
-    private static GameWindow gameWindow;
     private static PlayerMenuPanel playerMenuPanel;
-    private static final int MAXIMUM_PLAYERS = 5;
 
     public MainWindow(Model model, Settings settings) {
         setTitle("Cervi 1.0");

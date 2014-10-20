@@ -4,12 +4,14 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import worms.model.Model;
+import worms.Settings;
 import worms.model.Player;
 
 /**
  *
- * @author Pajcak
+ * @author Patrik Faistaver
+ * @author Václav Blažej
+ * @author Štěpán Plachý
  */
 public class PlayerSetupComponent extends JPanel {
 
@@ -17,12 +19,10 @@ public class PlayerSetupComponent extends JPanel {
     private int left, right;
     private Color color;
 
-    public PlayerSetupComponent(Model model, int playerId) {
-        //Model model = view.getModel();
-        Player player = model.getPlayer(playerId);
-        setBackground(player.getColor());
+    public PlayerSetupComponent(Settings settings, int playerId) {
+        setBackground(settings.getColors().get(playerId));
         setLayout(new FlowLayout());
-        label = new JLabel(player.getName());
+        label = new JLabel(settings.getNames().get(playerId));
         add(label);
     }
 }

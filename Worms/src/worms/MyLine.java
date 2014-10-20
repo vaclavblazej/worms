@@ -8,7 +8,9 @@ import java.awt.image.BufferedImage;
 
 /**
  *
- * @author Pajcak & Venca
+ * @author Patrik Faistaver
+ * @author Václav Blažej
+ * @author Štěpán Plachý
  */
 public class MyLine {
 

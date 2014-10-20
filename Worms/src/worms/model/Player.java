@@ -4,9 +4,12 @@ import java.awt.Color;
 
 /**
  *
- * @author Venca & Pajcak & Štěpán
+ * @author Patrik Faistaver
+ * @author Václav Blažej
+ * @author Štěpán Plachý
  */
 public class Player {
+
     private String name;
     private int score;
     private Worm worm;
