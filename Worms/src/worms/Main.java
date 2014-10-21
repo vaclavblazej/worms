@@ -3,7 +3,7 @@ package worms;
 import worms.controller.Controller;
 import worms.model.Model;
 import worms.view.GameWindow;
-import worms.view.MainWindow;
+import worms.menu.MainWindow;
 
 /**
  *

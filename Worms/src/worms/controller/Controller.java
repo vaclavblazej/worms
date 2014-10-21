@@ -107,19 +107,18 @@ public class Controller implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // TODO - should be tie when nobody lives for few millisecond more than others
         tick();
         Iterator<Player> it = playingPlayers.iterator();
         while (it.hasNext()) {
             Player player = it.next();
             if (player.hasLost()) {
                 it.remove();
+                for (Player otherPlayer : playingPlayers) {
+                    otherPlayer.incrementScore();
+                }
             }
         }
         if (gameEnded()) {
-            if (playingPlayers.size() == 1) {
-                playingPlayers.get(0).incrementScore();
-            }
             timer.stop();
             try {
                 Thread.sleep(1500);
