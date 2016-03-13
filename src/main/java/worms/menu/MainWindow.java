@@ -25,7 +25,6 @@ public class MainWindow extends JFrame {
 
         JButton playButton = new JButton("Play!");
         playButton.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent evt) {
                 Main.initGame();
             }
