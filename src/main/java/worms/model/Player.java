@@ -8,7 +8,7 @@ import java.awt.Color;
  * @author Václav Blažej
  * @author Štěpán Plachý
  */
-public class Player {
+public abstract class Player {
 
     private String name;
     private int score;
@@ -71,4 +71,6 @@ public class Player {
     public void setLost(boolean lost) {
         this.lost = lost;
     }
+
+    public abstract void prepare(Model model);
 }

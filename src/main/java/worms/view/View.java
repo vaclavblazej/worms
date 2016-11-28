@@ -1,22 +1,21 @@
 package worms.view;
 
-import java.awt.Color;
-import worms.model.Worm;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import worms.Settings;
+import worms.ai.AiBrain;
+import worms.ai.AiPreparedBrain;
+import worms.ai.ComputerPlayer;
 import worms.controller.Controller;
 import worms.model.Model;
 import worms.model.Player;
+import worms.model.Worm;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.geom.Point2D;
 
 /**
- *
  * @author Patrik Faistaver
  * @author Václav Blažej
  * @author Štěpán Plachý
@@ -28,23 +27,20 @@ public class View extends JPanel implements ActionListener {
     private final Controller controller;
     private final Settings settings;
 
-    public Model getModel() {
-        return model;
-    }
-
     public View(Model model, Controller controllerArg, Settings settings) {
         this.model = model;
         this.controller = controllerArg;
         this.settings = settings;
         this.timer = new Timer(40, this);
         // when invokeLater is not used, first game is spoiled by bug
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                timer.start();
-                controller.startGame();
-            }
+        SwingUtilities.invokeLater(() -> {
+            timer.start();
+            controller.startGame();
         });
+    }
+
+    public Model getModel() {
+        return model;
     }
 
     @Override
@@ -64,6 +60,18 @@ public class View extends JPanel implements ActionListener {
         }
         int pos = 10;
         for (Player player : model.getPlayers()) {
+            if (player instanceof ComputerPlayer) {
+                final AiBrain br = ((ComputerPlayer) player).getBrain();
+                if (br instanceof AiPreparedBrain) {
+                    final AiPreparedBrain brain = (AiPreparedBrain) br;
+                    final Point2D.Double position = player.getWorm().getPosition();
+                    final double distance = position.distance(0, 0);
+                    g.setColor(Color.getHSBColor(1f-Math.min((float) distance/800f, 1f), 1f, 1f));
+                    for (Point2D.Double other : brain.others) {
+                        g.drawLine((int) position.x, (int) position.y, (int) other.x, (int) other.y);
+                    }
+                }
+            }
             g.setColor(player.getColor());
             g.drawString("" + player.getScore(), pos, 10);
             pos += 20;

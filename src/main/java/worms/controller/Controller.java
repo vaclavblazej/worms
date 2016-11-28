@@ -1,14 +1,5 @@
 package worms.controller;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.Timer;
 import worms.MyLine;
 import worms.Settings;
 import worms.model.Model;
@@ -16,8 +7,16 @@ import worms.model.Player;
 import worms.model.Worm;
 import worms.view.View;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
  * @author Patrik Faistaver
  * @author Václav Blažej
  * @author Štěpán Plachý
@@ -39,6 +38,9 @@ public class Controller implements ActionListener {
     }
 
     public void tick() {
+        for (Player player : playingPlayers) {
+            player.prepare(model);
+        }
         for (Player player : playingPlayers) {
             Worm worm = player.getWorm();
             Point.Double position = worm.getPosition();

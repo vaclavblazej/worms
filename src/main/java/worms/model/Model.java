@@ -1,15 +1,20 @@
 package worms.model;
 
-import java.awt.Color;
-import java.awt.Point;
+import worms.MyLine;
+import worms.Settings;
+import worms.ai.AiBrain;
+import worms.ai.AiPreparedBrain;
+import worms.ai.AiRandomBrain;
+import worms.ai.ComputerPlayer;
+
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import worms.MyLine;
-import worms.Settings;
+import java.util.Random;
+import java.util.function.Supplier;
 
 /**
- *
  * @author Patrik Faistaver
  * @author Václav Blažej
  * @author Štěpán Plachý
@@ -17,20 +22,30 @@ import worms.Settings;
 public final class Model {
 
     private final ArrayList<Player> players;
-    private BufferedImage image;
     private final Point.Double origin;
     private final Settings settings;
+    private BufferedImage image;
 
     public Model(Settings settings) {
         this.settings = settings;
         players = new ArrayList<>(settings.getMaximumPlayerCount());
         origin = new Point.Double(settings.getWindowWidth() / 2, settings.getWindowHeight() / 2);
     }
-    
-    public void initialize(){
+
+    public void initialize() {
         final int playerCount = settings.getPlayerCount();
+//        for (int i = 0; i < playerCount; i++) {
+//            players.add(new HumanPlayer(settings.getNames().get(i), settings.getColors().get(i)));
+//        }
+        final Random random = new Random();
+        final Supplier<Float> func = () -> ((random.nextFloat() % 0.7f) + 0.3f) % 1;
+
         for (int i = 0; i < playerCount; i++) {
-            players.add(new Player(settings.getNames().get(i), settings.getColors().get(i)));
+            final Color color = Color.getHSBColor(func.get(), func.get(), func.get());
+            AiBrain brain;
+            if (i == 0) brain = new AiPreparedBrain();
+            else brain = new AiRandomBrain();
+            players.add(new ComputerPlayer("CompAi " + i, color, brain));
         }
         reset();
     }

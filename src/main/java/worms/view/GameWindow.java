@@ -1,7 +1,8 @@
 package worms.view;
 
 import java.awt.Dimension;
-import javax.swing.JFrame;
+import javax.swing.*;
+
 import worms.Settings;
 import worms.controller.Controller;
 import worms.controller.Input;
@@ -19,7 +20,7 @@ public class GameWindow extends JFrame {
 
     public GameWindow(Model model, Controller controller, Settings settings) {
         super("Cervi 1.0");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
         setResizable(false);
 
