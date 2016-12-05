@@ -33,10 +33,17 @@ public class View extends JPanel implements ActionListener {
         this.settings = settings;
         this.timer = new Timer(40, this);
         // when invokeLater is not used, first game is spoiled by bug
-        SwingUtilities.invokeLater(() -> {
-            timer.start();
-            controller.startGame();
-        });
+        Thread thread = new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                SwingUtilities.invokeLater(() -> {
+                    timer.start();
+                    controller.startSession();
+                });
+            }
+        };
+        thread.run();
     }
 
     public Model getModel() {
@@ -66,7 +73,7 @@ public class View extends JPanel implements ActionListener {
                     final AiNeuralBrain brain = (AiNeuralBrain) br;
                     final Point2D.Double position = player.getWorm().getPosition();
                     final double distance = position.distance(0, 0);
-                    g.setColor(Color.getHSBColor(1f-Math.min((float) distance/800f, 1f), 1f, 1f));
+                    g.setColor(Color.getHSBColor(1f - Math.min((float) distance / 800f, 1f), 1f, 1f));
                     for (Point2D.Double other : brain.others) {
                         g.drawLine((int) position.x, (int) position.y, (int) other.x, (int) other.y);
                     }

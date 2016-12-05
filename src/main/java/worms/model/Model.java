@@ -43,8 +43,11 @@ public final class Model {
         for (int i = 0; i < playerCount; i++) {
             final Color color = Color.getHSBColor(func.get(), func.get(), func.get());
             AiBrain brain;
-            if (i == 0) brain = new AiNeuralBrain();
-            else brain = new AiRandomBrain();
+            if (i == 0) {
+                brain = new AiNeuralBrain();
+            } else {
+                brain = new AiRandomBrain();
+            }
             players.add(new ComputerPlayer("CompAi " + i, color, brain));
         }
         reset();
@@ -89,8 +92,8 @@ public final class Model {
     public void reset() {
         image = new BufferedImage(settings.getWindowWidth() + 1, settings.getWindowHeight() + 1, BufferedImage.TYPE_INT_RGB);
 
-        int degreeChange = 360 / settings.getPlayerCount();
-        int degree = 0;
+        double degreeChange = 2 * Math.PI / settings.getPlayerCount();
+        double degree = 0;
         for (Player player : players) {
             Worm worm = player.getWorm();
             worm.setPosition(origin.x, origin.y);
@@ -106,6 +109,9 @@ public final class Model {
     }
 
     public int getMapColor(int x, int y) {
+        if (x > settings.getWindowWidth() || x <= 0 || y > settings.getWindowHeight() || y <= 0) {
+            return Color.white.getRGB();
+        }
         return image.getRGB(x, y);
     }
 }

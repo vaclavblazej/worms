@@ -21,7 +21,7 @@ public final class Settings implements Serializable {
     private int windowWidth;
     private int windowHeight;
 
-    private int moveAngleChange;
+    private double moveAngleChange;
     private final ArrayList<String> names;
     private final ArrayList<Integer> leftMap;
     private final ArrayList<Integer> rightMap;
@@ -36,7 +36,7 @@ public final class Settings implements Serializable {
         phaseShiftHeadsUpTime = 5;
         windowWidth = 800;
         windowHeight = 600;
-        moveAngleChange = 2;
+        moveAngleChange = 2*Math.PI/180.;
         names = new ArrayList<>();
         leftMap = new ArrayList<>();
         rightMap = new ArrayList<>();
@@ -57,11 +57,11 @@ public final class Settings implements Serializable {
         playerCount++;
     }
 
-    public int getMoveAngleChange() {
+    public double getMoveAngleChange() {
         return moveAngleChange;
     }
 
-    public void setMoveAngleChange(int moveAngleChange) {
+    public void setMoveAngleChange(double moveAngleChange) {
         this.moveAngleChange = moveAngleChange;
     }
 

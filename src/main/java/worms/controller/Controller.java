@@ -5,53 +5,108 @@ import worms.Settings;
 import worms.model.Model;
 import worms.model.Player;
 import worms.model.Worm;
-import worms.view.View;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Patrik Faistaver
  * @author Václav Blažej
  * @author Štěpán Plachý
  */
-public class Controller implements ActionListener {
+public class Controller {
 
     private final Model model;
     private final Settings settings;
     private final ArrayList<Player> playingPlayers;
-    private Timer timer;
-    private int SPEED = 15; // 15 original, lower is faster
-    private int PAUSE = 100; // 15 original, lower is faster
+    private final int SPEED_INITIAL = 15; // 15 original, lower is faster
+    private final int PAUSE_INITIAL = 100;
+    private Timer timer, delay;
+    private boolean GRAPHICS = true;
+    private boolean RESTART = false;
+    private long turn = 0;
 
     public Controller(Model model, Settings settings) {
         this.model = model;
         this.settings = settings;
-        this.timer = new Timer(SPEED, this);
+        this.timer = new Timer(SPEED_INITIAL, e -> tick());
+        this.delay = new Timer(PAUSE_INITIAL, e -> startGame());
         this.playingPlayers = new ArrayList<>();
 
         model.reset();
     }
 
-    public void tick() {
-        for (Player player : playingPlayers) {
-            player.prepare(model);
+    private void tick() {
+        prepareAllPlayers();
+        simulateMovement();
+        checkLostPlayers();
+        // restart game if needed
+        if (gameEnded()) {
+            timer.stop();
+            model.reset();
+            delay.start();
         }
+    }
+
+    private void quickTick() {
+        prepareAllPlayers();
+        simulateMovement();
+        checkLostPlayers();
+        if (gameEnded()) {
+            model.reset();
+            RESTART = true;
+        }
+    }
+
+    public void startSession() {
+        delay.start();
+    }
+
+    private void startGame() {
+        delay.stop();
+        if (GRAPHICS) {
+            setupRound();
+            timer.start();
+        } else {
+            // break free of event thread
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    super.run();
+                    while (!GRAPHICS) {
+                        setupRound();
+                        RESTART = false;
+                        while (!RESTART) {
+                            quickTick();
+                        }
+                    }
+                    delay.start();
+                }
+            };
+            thread.start();
+        }
+    }
+
+    private void setupRound() {
+        turn++;
+        playingPlayers.clear();
+        for (Player player : model.getPlayers()) {
+            playingPlayers.add(player);
+        }
+    }
+
+    private void simulateMovement() {
         for (Player player : playingPlayers) {
             Worm worm = player.getWorm();
             Point.Double position = worm.getPosition();
-            int angle = worm.getAngle();
+            double angle = worm.getAngle();
             Point.Double oldPosition = new Point.Double();
             oldPosition.x = position.x;
             oldPosition.y = position.y;
-            position.x += Math.cos(Math.toRadians(angle));
-            position.y -= Math.sin(Math.toRadians(angle));
+            position.x += Math.cos(angle);
+            position.y -= Math.sin(angle);
 
             switch (worm.getDirection()) {
                 case LEFT:
@@ -63,10 +118,10 @@ public class Controller implements ActionListener {
                 case STRAIGHT:
                     break;
             }
-            if (angle >= 360) {
-                angle -= 360;
+            if (angle >= 2 * Math.PI) {
+                angle -= 2 * Math.PI;
             } else if (angle < 0) {
-                angle += 360;
+                angle += 2 * Math.PI;
             }
             worm.setAngle(angle);
 
@@ -83,12 +138,10 @@ public class Controller implements ActionListener {
             }
             if (!worm.isPhaseShifted()) {
                 int distance = 2;
-                int x = (int) (position.x + distance * Math.cos(Math.toRadians(angle)));
-                int y = (int) (position.y - distance * Math.sin(Math.toRadians(angle)));
+                int x = (int) (position.x + distance * Math.cos(angle));
+                int y = (int) (position.y - distance * Math.sin(angle));
 
-                if (x > settings.getWindowWidth() || x <= 0
-                        || y > settings.getWindowHeight() || y <= 0
-                        || model.getMapColor(x, y) != Color.BLACK.getRGB()) {
+                if (model.getMapColor(x, y) != Color.BLACK.getRGB()) {
                     player.setLost(true);
                 }
 
@@ -97,22 +150,14 @@ public class Controller implements ActionListener {
         }
     }
 
-    public void startGame() {
-        playingPlayers.clear();
-        for (Player player : model.getPlayers()) {
-            playingPlayers.add(player);
+    private void prepareAllPlayers() {
+        // let each player brain work
+        for (Player player : playingPlayers) {
+            player.prepare(model);
         }
-        timer = new Timer(SPEED, this);
-        timer.start();
     }
 
-    public boolean gameEnded() {
-        return playingPlayers.size() <= 1;
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        tick();
+    private void checkLostPlayers() {
         Iterator<Player> it = playingPlayers.iterator();
         while (it.hasNext()) {
             Player player = it.next();
@@ -123,23 +168,25 @@ public class Controller implements ActionListener {
                 }
             }
         }
-        if (gameEnded()) {
-            timer.stop();
-            try {
-                Thread.sleep(PAUSE);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            model.reset();
-            startGame();
-        }
     }
 
-    public void setSPEED(int SPEED) {
-        this.SPEED = SPEED;
+    private boolean gameEnded() {
+        return playingPlayers.size() <= 1;
     }
 
-    public void setPAUSE(int PAUSE) {
-        this.PAUSE = PAUSE;
+    public void setSPEED_INITIAL(int SPEED_INITIAL) {
+        timer.setDelay(SPEED_INITIAL);
+    }
+
+    public void setPAUSE_INITIAL(int PAUSE_INITIAL) {
+        delay.setDelay(PAUSE_INITIAL);
+    }
+
+    public void setGRAPHICS(boolean GRAPHICS) {
+        this.GRAPHICS = GRAPHICS;
+    }
+
+    public long getTurn() {
+        return turn;
     }
 }

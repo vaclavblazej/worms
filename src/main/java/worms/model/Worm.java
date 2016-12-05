@@ -12,7 +12,7 @@ import java.awt.geom.Point2D;
 public final class Worm {
 
     private Point.Double position;
-    private int angle;
+    private double angle;
     private Direction direction;
     private int phaseShiftTimer;
     private boolean phaseShift;
@@ -49,11 +49,11 @@ public final class Worm {
         setPosition(new Point.Double(x, y));
     }
 
-    public int getAngle() {
+    public double getAngle() {
         return angle;
     }
 
-    public void setAngle(int angle) {
+    public void setAngle(double angle) {
         this.angle = angle;
     }
 

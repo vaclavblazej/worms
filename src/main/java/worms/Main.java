@@ -26,7 +26,7 @@ public class Main {
         initMenu();
     }
 
-    public static void initMenu() {
+    private static void initMenu() {
         mainWindow = new MainWindow(model, settings);
     }
 

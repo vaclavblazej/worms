@@ -56,7 +56,7 @@ public class AiNeuralBrain extends AiBrain {
     Point.Double relativeVector(Worm origin, Worm object) {
         final Point2D.Double a = origin.getPosition();
         final Point2D.Double b = object.getPosition();
-        final double angle = Math.toRadians(origin.getAngle());
+        final double angle = origin.getAngle();
         final double xx = (b.x - a.x) * Math.cos(angle);
         final double xy = (b.y - a.y) * Math.sin(angle);
         final double yy = -(b.y - a.y) * Math.cos(angle);
