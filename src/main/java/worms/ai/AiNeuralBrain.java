@@ -1,7 +1,7 @@
 package worms.ai;
 
 import worms.ai.neuralnet.NeuralNetwork;
-import worms.ai.neuralnet.SimpleNetwork;
+import worms.ai.neuralnet.Vector;
 import worms.model.Direction;
 import worms.model.Model;
 import worms.model.Worm;
@@ -21,17 +21,16 @@ public class AiNeuralBrain extends AiBrain {
 
     public AiNeuralBrain() {
         this.others = new ArrayList<>();
-        this.network = new SimpleNetwork(2, 3, 1);
+        this.network = new NeuralNetwork();
+        network.prepare(2, 3, 1);
     }
 
     @Override
     public void think(Worm worm, Model model) {
         others.clear();
         final Point2D.Double position = worm.getPosition();
-        List<Double> input = new ArrayList<>();
-        input.add(0.0);
-        input.add(0.0);
-        final List<Double> output = network.tick(input);
+        Vector input = new Vector(2);
+        final Vector output = network.tick(input);
         final Double result = output.get(0);
 //        model.
 //        final ArrayList<Player> players = model.getPlayers();

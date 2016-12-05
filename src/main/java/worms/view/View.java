@@ -33,17 +33,7 @@ public class View extends JPanel implements ActionListener {
         this.settings = settings;
         this.timer = new Timer(40, this);
         // when invokeLater is not used, first game is spoiled by bug
-        Thread thread = new Thread(){
-            @Override
-            public void run() {
-                super.run();
-                SwingUtilities.invokeLater(() -> {
-                    timer.start();
-                    controller.startSession();
-                });
-            }
-        };
-        thread.run();
+        SwingUtilities.invokeLater(timer::start);
     }
 
     public Model getModel() {

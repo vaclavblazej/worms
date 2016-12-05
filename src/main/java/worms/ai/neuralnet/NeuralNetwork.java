@@ -1,76 +1,57 @@
 package worms.ai.neuralnet;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author Václav Blažej
  */
 public class NeuralNetwork {
 
-    List<Neuron> orderedNeurons;
-    long input;
-    long output;
+    private static final Random random = new Random();
+    private int input, middle, output, size;
+    private Matrix matrix;
+    private Vector state;
 
-    public void addConnection(int a, int b) {
-        final Neuron aa = orderedNeurons.get(a);
-        final Neuron bb = orderedNeurons.get(b);
-        aa.addConnection(bb);
+    public NeuralNetwork(NeuralNetwork copy) {
+        this.input = copy.input;
+        this.middle = copy.middle;
+        this.output = copy.output;
+        this.size = copy.size;
+        this.matrix = new Matrix(copy.matrix);
+        this.state = new Vector(copy.state);
     }
 
-    public void prepare(List<Neuron> neurons, long input, long output) {
-        orderedNeurons = neurons;
+    public NeuralNetwork() {
+    }
+
+    public void prepare(int input, int middle, int output) {
         this.input = input;
+        this.middle = middle;
         this.output = output;
-//        Set<Neu> todo = new HashSet<>();
-//        for (Neuron neuron : neurons) {
-//            todo.add(new Neu(neuron));
-//        }
-//        Queue<Neuron> queue = new LinkedList<>();
-//        final Iterator<Neu> iterator = todo.iterator();
-//        while (iterator.hasNext()) {
-//            Neu neu = iterator.next();
-//            if (neu.ancestors == 0) {
-//                queue.add(neu.neuron);
-//                iterator.remove();
-//            }
-//        }
-//        while(!queue.isEmpty()){
-//            final Neuron poll = queue.poll();
-//            poll.
-//        }
+        size = input + middle + output;
+        matrix = new Matrix(size, size);
+        state = new Vector(size);
     }
 
-    public List<Double> tick(List<Double> inputList) {
+    public Vector tick(Vector inputList) {
         // prepare inputs
-        if(inputList.size() != input)throw new RuntimeException("inputlist has bad length");
-        for (int i = 0; i < inputList.size(); i++) {
-            orderedNeurons.get(i).setValue(inputList.get(i));
-        }
+        if (inputList.getVector().size() != input)
+            throw new RuntimeException("inputlist has bad length " + inputList.getVector().size() + " != " + input);
+        state.setSubvector(0, input, inputList);
         // compute difference
-        for (Neuron neuron : orderedNeurons) {
-            neuron.compute();
-        }
+        state = matrix.cross(state);
         // prepare output
-        final List<Double> outputList = new ArrayList<>();
-        for (int i = (int) (orderedNeurons.size() - output); i < orderedNeurons.size(); i++) {
-            outputList.add(orderedNeurons.get(i).getValue());
-        }
-        return outputList;
+        return state.getSubvector(size - output, size);
     }
 
-    @Override
-    public String toString() {
-        return "NeuralNetwork{" +
-                "orderedNeurons=\n" + orderedNeurons + '\n' +
-                '}';
+    public NeuralNetwork mutate() {
+        NeuralNetwork result = new NeuralNetwork(this);
+        List<Vector> matrix = result.matrix.getMatrix();
+        int h = random.nextInt(matrix.size());
+        Vector vector = matrix.get(h);
+        int w = random.nextInt(vector.size());
+        vector.setValue(w, random.nextDouble());
+        return result;
     }
-//    private static class Neu {
-//        Neuron neuron;
-//        long ancestors;
-//        public Neu(Neuron neuron) {
-//            this.neuron = neuron;
-//            ancestors = neuron.previous.size();
-//        }
-//    }
 }

@@ -5,6 +5,8 @@ import worms.controller.Controller;
 import worms.model.Model;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +20,7 @@ public class EvolutionView extends JPanel implements ActionListener {
     private static View gamePlane;
     final JLabel turn = new JLabel();
     final Timer timer = new Timer(1000, this);
+    int iterations = 0;
     Controller controller;
 
     EvolutionView(Model model, Controller controller, Settings settings) {
@@ -47,8 +50,24 @@ public class EvolutionView extends JPanel implements ActionListener {
             controller.setPAUSE_INITIAL(pauseSlider.getValue());
         });
         add(pauseSlider);
-        final JButton comp = new JButton("Hello button");
+        final JButton comp = new JButton(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("run " + iterations + " iterations");
+                controller.startSession(iterations);
+            }
+        });
         add(comp);
+        final JSlider iterationSlider = new JSlider(1, 10000, 500);
+        iterationSlider.addChangeListener(evt -> {
+            iterations = iterationSlider.getValue();
+            comp.setText("Start " + iterations + " iterations");
+        });
+        ChangeEvent ce = new ChangeEvent(iterationSlider);
+        for(ChangeListener cl : iterationSlider.getChangeListeners()){
+            cl.stateChanged(ce);
+        }
+        add(iterationSlider);
         timer.start();
     }
 

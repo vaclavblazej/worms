@@ -27,6 +27,7 @@ public class Controller {
     private boolean GRAPHICS = true;
     private boolean RESTART = false;
     private long turn = 0;
+    private int numbers = 1;
 
     public Controller(Model model, Settings settings) {
         this.model = model;
@@ -60,7 +61,8 @@ public class Controller {
         }
     }
 
-    public void startSession() {
+    public void startSession(int numbers) {
+        this.numbers = numbers;
         delay.start();
     }
 
@@ -68,14 +70,17 @@ public class Controller {
         delay.stop();
         if (GRAPHICS) {
             setupRound();
-            timer.start();
+            if (isValidIteration()) {
+                timer.start();
+            }
         } else {
             // break free of event thread
             Thread thread = new Thread() {
                 @Override
                 public void run() {
                     super.run();
-                    while (!GRAPHICS) {
+                    while (true) {
+                        if (GRAPHICS || !isValidIteration()) break;
                         setupRound();
                         RESTART = false;
                         while (!RESTART) {
@@ -87,6 +92,10 @@ public class Controller {
             };
             thread.start();
         }
+    }
+
+    private boolean isValidIteration() {
+        return numbers-- > 0;
     }
 
     private void setupRound() {
