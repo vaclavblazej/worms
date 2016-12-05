@@ -31,6 +31,7 @@ public class Main {
     }
 
     public static void initGame() {
+        mainWindow.setVisible(false);
         model.initialize();
         gameWindow = new GameWindow(model, controller, settings);
     }

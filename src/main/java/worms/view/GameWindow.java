@@ -1,6 +1,6 @@
 package worms.view;
 
-import java.awt.Dimension;
+import java.awt.*;
 import javax.swing.*;
 
 import worms.Settings;
@@ -23,11 +23,14 @@ public class GameWindow extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
         setResizable(false);
+        setLayout(new FlowLayout());
 
         gamePlane = new View(model, controller, settings);
-        gamePlane.setPreferredSize(new Dimension(800, 600));
+        gamePlane.setPreferredSize(new Dimension(800+200, 600));
         gamePlane.setFocusable(true);
         add(gamePlane);
+        final EvolutionView evolutionView = new EvolutionView(model, controller, settings);
+        add(evolutionView);
         pack();
 
         setFocusable(true);

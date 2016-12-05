@@ -25,13 +25,15 @@ public class Controller implements ActionListener {
 
     private final Model model;
     private final Settings settings;
-    private final Timer timer;
     private final ArrayList<Player> playingPlayers;
+    private Timer timer;
+    private int SPEED = 15; // 15 original, lower is faster
+    private int PAUSE = 100; // 15 original, lower is faster
 
     public Controller(Model model, Settings settings) {
         this.model = model;
         this.settings = settings;
-        this.timer = new Timer(15, this);
+        this.timer = new Timer(SPEED, this);
         this.playingPlayers = new ArrayList<>();
 
         model.reset();
@@ -100,6 +102,7 @@ public class Controller implements ActionListener {
         for (Player player : model.getPlayers()) {
             playingPlayers.add(player);
         }
+        timer = new Timer(SPEED, this);
         timer.start();
     }
 
@@ -123,12 +126,20 @@ public class Controller implements ActionListener {
         if (gameEnded()) {
             timer.stop();
             try {
-                Thread.sleep(1500);
+                Thread.sleep(PAUSE);
             } catch (InterruptedException ex) {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
             model.reset();
             startGame();
         }
+    }
+
+    public void setSPEED(int SPEED) {
+        this.SPEED = SPEED;
+    }
+
+    public void setPAUSE(int PAUSE) {
+        this.PAUSE = PAUSE;
     }
 }

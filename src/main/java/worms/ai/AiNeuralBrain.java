@@ -1,8 +1,9 @@
 package worms.ai;
 
+import worms.ai.neuralnet.NeuralNetwork;
+import worms.ai.neuralnet.SimpleNetwork;
 import worms.model.Direction;
 import worms.model.Model;
-import worms.model.Player;
 import worms.model.Worm;
 
 import java.awt.*;
@@ -13,29 +14,40 @@ import java.util.List;
 /**
  * @author Václav Blažej
  */
-public class AiPreparedBrain extends AiBrain {
+public class AiNeuralBrain extends AiBrain {
 
     public List<Point.Double> others;
+    private NeuralNetwork network;
 
-    public AiPreparedBrain() {
+    public AiNeuralBrain() {
         this.others = new ArrayList<>();
+        this.network = new SimpleNetwork(2, 3, 1);
     }
 
     @Override
     public void think(Worm worm, Model model) {
         others.clear();
-        final ArrayList<Player> players = model.getPlayers();
-        for (Player player : players) {
-            final Worm otherWorm = player.getWorm();
-            if (otherWorm == worm) continue;
-            others.add(otherWorm.getPosition());
-            final Point2D.Double e = relativeVector(worm, otherWorm);
-            System.out.println(e);
-        }
+        final Point2D.Double position = worm.getPosition();
+        List<Double> input = new ArrayList<>();
+        input.add(0.0);
+        input.add(0.0);
+        final List<Double> output = network.tick(input);
+        final Double result = output.get(0);
+//        model.
+//        final ArrayList<Player> players = model.getPlayers();
+//        for (Player player : players) {
+//            final Worm otherWorm = player.getWorm();
+//            if (otherWorm == worm) continue;
+//            others.add(otherWorm.getPosition());
+//            final Point2D.Double e = relativeVector(worm, otherWorm);
+//            System.out.println(e);
+//        }
 
         final int i = random.nextInt();
-        if (i > 0) {
+        if (result > 0.6) {
             worm.setDirection(Direction.RIGHT);
+        } else if (result > 0.4) {
+            worm.setDirection(Direction.STRAIGHT);
         } else {
             worm.setDirection(Direction.LEFT);
         }

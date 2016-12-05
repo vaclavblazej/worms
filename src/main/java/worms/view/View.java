@@ -2,7 +2,7 @@ package worms.view;
 
 import worms.Settings;
 import worms.ai.AiBrain;
-import worms.ai.AiPreparedBrain;
+import worms.ai.AiNeuralBrain;
 import worms.ai.ComputerPlayer;
 import worms.controller.Controller;
 import worms.model.Model;
@@ -62,8 +62,8 @@ public class View extends JPanel implements ActionListener {
         for (Player player : model.getPlayers()) {
             if (player instanceof ComputerPlayer) {
                 final AiBrain br = ((ComputerPlayer) player).getBrain();
-                if (br instanceof AiPreparedBrain) {
-                    final AiPreparedBrain brain = (AiPreparedBrain) br;
+                if (br instanceof AiNeuralBrain) {
+                    final AiNeuralBrain brain = (AiNeuralBrain) br;
                     final Point2D.Double position = player.getWorm().getPosition();
                     final double distance = position.distance(0, 0);
                     g.setColor(Color.getHSBColor(1f-Math.min((float) distance/800f, 1f), 1f, 1f));

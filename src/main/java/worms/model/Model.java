@@ -3,7 +3,7 @@ package worms.model;
 import worms.MyLine;
 import worms.Settings;
 import worms.ai.AiBrain;
-import worms.ai.AiPreparedBrain;
+import worms.ai.AiNeuralBrain;
 import worms.ai.AiRandomBrain;
 import worms.ai.ComputerPlayer;
 
@@ -43,7 +43,7 @@ public final class Model {
         for (int i = 0; i < playerCount; i++) {
             final Color color = Color.getHSBColor(func.get(), func.get(), func.get());
             AiBrain brain;
-            if (i == 0) brain = new AiPreparedBrain();
+            if (i == 0) brain = new AiNeuralBrain();
             else brain = new AiRandomBrain();
             players.add(new ComputerPlayer("CompAi " + i, color, brain));
         }
@@ -68,6 +68,22 @@ public final class Model {
 
     public BufferedImage getImage() {
         return image;
+    }
+
+    public double getDistance(Point2D.Double point, Point2D.Double direction) {
+        Point2D.Double pos = new Point2D.Double(point.x, point.y);
+        double size = direction.distance(0, 0);
+        direction.x /= size;
+        direction.y /= size;
+        double result = 0;
+        while (true) {
+            final int mapColor = getMapColor((int) pos.x, (int) pos.y);
+            System.out.println("mapColor: " + mapColor);
+            if (mapColor != 1) break;
+            pos.x += direction.x;
+            pos.y += direction.y;
+        }
+        return result;
     }
 
     public void reset() {
