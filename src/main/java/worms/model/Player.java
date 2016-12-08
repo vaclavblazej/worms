@@ -1,27 +1,36 @@
 package worms.model;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
- *
  * @author Patrik Faistaver
  * @author Václav Blažej
  * @author Štěpán Plachý
  */
 public abstract class Player {
 
+    private int id;
     private String name;
     private int score;
     private Worm worm;
     private boolean lost;
     private Color color;
 
-    public Player(String name, Color color) {
+    public Player(int id, String name, Color color) {
+        this.id = id;
         this.name = name;
         this.color = color;
         this.score = 0;
         this.worm = new Worm(0, 0, 0);
         this.lost = false;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void incrementScore() {

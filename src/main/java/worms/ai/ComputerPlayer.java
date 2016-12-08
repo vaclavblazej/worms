@@ -1,6 +1,5 @@
 package worms.ai;
 
-import worms.ai.AiBrain;
 import worms.model.Model;
 import worms.model.Player;
 
@@ -13,8 +12,8 @@ public class ComputerPlayer extends Player {
 
     private AiBrain brain;
 
-    public ComputerPlayer(String name, Color color, AiBrain brain) {
-        super(name, color);
+    public ComputerPlayer(int id, String name, Color color, AiBrain brain) {
+        super(id, name, color);
         this.brain = brain;
     }
 
@@ -25,5 +24,9 @@ public class ComputerPlayer extends Player {
 
     public AiBrain getBrain() {
         return brain;
+    }
+
+    public void setBrain(AiBrain brain) {
+        this.brain = brain;
     }
 }

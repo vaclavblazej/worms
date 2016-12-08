@@ -2,7 +2,6 @@ package worms.ai;
 
 import worms.ai.neuralnet.NeuralNetwork;
 import worms.ai.neuralnet.Vector;
-import worms.model.Direction;
 import worms.model.Model;
 import worms.model.Worm;
 
@@ -16,51 +15,49 @@ import java.util.List;
  */
 public class AiNeuralBrain extends AiBrain {
 
+    private static int RAYS = 10;
     public List<Point.Double> others;
     private NeuralNetwork network;
 
     public AiNeuralBrain() {
         this.others = new ArrayList<>();
         this.network = new NeuralNetwork();
-        network.prepare(2, 3, 1);
+        network.prepare(RAYS, 1, 1);
     }
 
     @Override
     public void think(Worm worm, Model model) {
         others.clear();
         final Point2D.Double position = worm.getPosition();
-        Vector input = new Vector(2);
-        final Vector output = network.tick(input);
-        final Double result = output.get(0);
-//        model.
-//        final ArrayList<Player> players = model.getPlayers();
-//        for (Player player : players) {
-//            final Worm otherWorm = player.getWorm();
-//            if (otherWorm == worm) continue;
-//            others.add(otherWorm.getPosition());
-//            final Point2D.Double e = relativeVector(worm, otherWorm);
-//            System.out.println(e);
-//        }
-
-        final int i = random.nextInt();
-        if (result > 0.6) {
-            worm.setDirection(Direction.RIGHT);
-        } else if (result > 0.4) {
-            worm.setDirection(Direction.STRAIGHT);
-        } else {
-            worm.setDirection(Direction.LEFT);
+        double angle = worm.getAngle();
+        Vector input = new Vector(RAYS);
+        model.clearLines();
+        for (int i = 0; i < RAYS; i++) {
+            angle += 2 * Math.PI / RAYS;
+            double distance = model.getDistance(position, new Point2D.Double(Math.cos(angle), Math.sin(angle)));
+            input.setValue(i, Math.min(1, distance / 800));
         }
+        final Vector output = network.tick(input);
+        final Double result = sigmoid(output.get(0));
+
+//        System.out.println("VECTOR: " + network.getState());
+        worm.setDirection(result);
     }
 
-    Point.Double relativeVector(Worm origin, Worm object) {
-        final Point2D.Double a = origin.getPosition();
-        final Point2D.Double b = object.getPosition();
-        final double angle = origin.getAngle();
-        final double xx = (b.x - a.x) * Math.cos(angle);
-        final double xy = (b.y - a.y) * Math.sin(angle);
-        final double yy = -(b.y - a.y) * Math.cos(angle);
-        final double yx = (b.x - a.x) * Math.sin(angle);
-        final Point2D.Double d = new Point2D.Double(xx + xy, yy + yx);
-        return d;
+    @Override
+    public void reset() {
+        network.resetState();
+    }
+
+    public NeuralNetwork getNetwork() {
+        return network;
+    }
+
+    public void setNetwork(NeuralNetwork network) {
+        this.network = network;
+    }
+
+    private double sigmoid(double value) {
+        return 1 / (1 + Math.exp(-value));
     }
 }

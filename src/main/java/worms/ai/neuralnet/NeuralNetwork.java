@@ -29,29 +29,54 @@ public class NeuralNetwork {
         this.input = input;
         this.middle = middle;
         this.output = output;
-        size = input + middle + output;
-        matrix = new Matrix(size, size);
+        size = 1 + input + middle + output;
+        matrix = Matrix.getRandomMatrix(size, size);
+        List<Vector> values = this.matrix.getMatrix();
+        for (int i = 0; i < size; i++) {
+            values.get(0).setValue(i, i == 0 ? 1 : 0);
+        }
+//        System.out.println(this.matrix);
         state = new Vector(size);
+        state.setValue(0, 1);
+    }
+
+    public void resetState() {
+        state = new Vector(size);
+        state.setValue(0, 1);
+        state.setSubvector(1 + input, 1 + input + middle, Vector.getRandomVector(middle));
     }
 
     public Vector tick(Vector inputList) {
         // prepare inputs
-        if (inputList.getVector().size() != input)
-            throw new RuntimeException("inputlist has bad length " + inputList.getVector().size() + " != " + input);
-        state.setSubvector(0, input, inputList);
+        if (inputList.size() != input) {
+            throw new RuntimeException("inputlist has bad length " + inputList.size() + " != " + input);
+        }
+        state.setValue(0, 1);
+        state.setSubvector(1, 1 + input, inputList);
         // compute difference
         state = matrix.cross(state);
-        // prepare output
+        // extract output
         return state.getSubvector(size - output, size);
     }
 
     public NeuralNetwork mutate() {
         NeuralNetwork result = new NeuralNetwork(this);
         List<Vector> matrix = result.matrix.getMatrix();
-        int h = random.nextInt(matrix.size());
-        Vector vector = matrix.get(h);
+        int h = random.nextInt(matrix.size() - 1);
+        Vector vector = matrix.get(h + 1);
         int w = random.nextInt(vector.size());
-        vector.setValue(w, random.nextDouble());
+        double oldval = vector.get(w);
+        double jump;
+        if (random.nextInt() % 1000 < 4) {
+            jump = random.nextDouble() - 0.5;
+        } else {
+            jump = 0.5 + (random.nextDouble() - 0.5) / 1000;
+        }
+        vector.setValue(w, Math.min(1, Math.max(0, oldval + jump)));
         return result;
+    }
+
+    public Vector getState() {
+        return state;
     }
 }

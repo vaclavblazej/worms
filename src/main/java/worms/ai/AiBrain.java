@@ -17,4 +17,6 @@ public abstract class AiBrain {
     }
 
     public abstract void think(Worm worm, Model model);
+
+    public abstract void reset();
 }

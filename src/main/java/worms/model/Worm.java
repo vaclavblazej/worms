@@ -1,10 +1,9 @@
 package worms.model;
 
-import java.awt.Point;
+import java.awt.*;
 import java.awt.geom.Point2D;
 
 /**
- *
  * @author Patrik Faistaver
  * @author Václav Blažej
  * @author Štěpán Plachý
@@ -16,6 +15,15 @@ public final class Worm {
     private Direction direction;
     private int phaseShiftTimer;
     private boolean phaseShift;
+
+    public Worm(int x, int y, int angle) {
+        position = new Point.Double(x, y);
+        this.angle = angle;
+        direction = new Direction();
+        direction.setDirection(Direction.STRAIGHT);
+        phaseShiftTimer = 5;
+        phaseShift = false;
+    }
 
     public boolean isPhaseShifted() {
         return phaseShift;
@@ -61,15 +69,7 @@ public final class Worm {
         return direction;
     }
 
-    public void setDirection(Direction direction) {
-        this.direction = direction;
-    }
-
-    public Worm(int x, int y, int angle) {
-        position = new Point.Double(x, y);
-        this.angle = angle;
-        direction = Direction.STRAIGHT;
-        phaseShiftTimer = 5;
-        phaseShift = false;
+    public void setDirection(double direction) {
+        this.direction.setDirection(direction);
     }
 }

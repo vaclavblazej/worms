@@ -12,18 +12,26 @@ public class Vector {
     private List<Double> vector;
 
     public Vector(Vector copy) {
-        List<Double> vector = copy.getVector();
-        for (Double n : vector) {
-            vector.add(n);
+        this.vector = new ArrayList<>();
+        for (Double n : copy.getVector()) {
+            this.vector.add(n);
         }
     }
 
     public Vector(int size) {
-        Random random = new Random();
         vector = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            vector.add(random.nextDouble());
+            vector.add(0.0);
         }
+    }
+
+    public static Vector getRandomVector(int size) {
+        Random random = new Random();
+        Vector result = new Vector(size);
+        for (int i = 0; i < size; i++) {
+            result.setValue(i, random.nextDouble() / size / size);
+        }
+        return result;
     }
 
     public double get(int index) {
@@ -43,8 +51,9 @@ public class Vector {
     }
 
     public void setSubvector(int from, int to, Vector vector) {
+        assert to - from == vector.size();
         for (int i = from, j = 0; i < to; i++, j++) {
-            vector.setValue(i, vector.get(j));
+            this.setValue(i, vector.get(j));
         }
     }
 
@@ -56,7 +65,16 @@ public class Vector {
         return result;
     }
 
-    public int size(){
+    public int size() {
         return vector.size();
+    }
+
+    @Override
+    public String toString() {
+        String res = "";
+        for (Double aDouble : vector) {
+            res += String.format("%.3f ", aDouble);
+        }
+        return res;
     }
 }

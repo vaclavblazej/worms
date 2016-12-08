@@ -11,8 +11,8 @@ import java.awt.*;
 public class HumanPlayer extends Player{
 
 
-    public HumanPlayer(String name, Color color) {
-        super(name,color);
+    public HumanPlayer(int id, String name, Color color) {
+        super(id, name,color);
     }
 
     @Override

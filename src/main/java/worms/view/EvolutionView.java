@@ -19,25 +19,23 @@ public class EvolutionView extends JPanel implements ActionListener {
 
     private static View gamePlane;
     final JLabel turn = new JLabel();
-    final Timer timer = new Timer(1000, this);
+    private final Timer refreshGraphics = new Timer(200, this);
     int iterations = 0;
     Controller controller;
 
     EvolutionView(Model model, Controller controller, Settings settings) {
         this.controller = controller;
         setVisible(true);
-        setLayout(new GridLayout(6, 2));
+        setLayout(new GridLayout(12, 2));
         add(turn);
+        final Checkbox showRays = new Checkbox("Show rays: ", true);
+        showRays.addItemListener(e -> {
+//            model.(e.getStateChange() == ItemEvent.SELECTED);
+        });
+        add(showRays);
         final Checkbox skipGraphics = new Checkbox("Graphics: ", true);
         skipGraphics.addItemListener(e -> {
-            switch (e.getStateChange()) {
-                case ItemEvent.SELECTED:
-                    controller.setGRAPHICS(true);
-                    break;
-                case ItemEvent.DESELECTED:
-                    controller.setGRAPHICS(false);
-                    break;
-            }
+            controller.setGRAPHICS(e.getStateChange() == ItemEvent.SELECTED);
         });
         add(skipGraphics);
         final JSlider speedSlider = new JSlider(2, 100, 15);
@@ -64,11 +62,11 @@ public class EvolutionView extends JPanel implements ActionListener {
             comp.setText("Start " + iterations + " iterations");
         });
         ChangeEvent ce = new ChangeEvent(iterationSlider);
-        for(ChangeListener cl : iterationSlider.getChangeListeners()){
+        for (ChangeListener cl : iterationSlider.getChangeListeners()) {
             cl.stateChanged(ce);
         }
         add(iterationSlider);
-        timer.start();
+        refreshGraphics.start();
     }
 
     @Override

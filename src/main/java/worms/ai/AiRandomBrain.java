@@ -17,4 +17,8 @@ public class AiRandomBrain extends AiBrain {
             worm.setDirection(Direction.LEFT);
         }
     }
+
+    @Override
+    public void reset() {
+    }
 }

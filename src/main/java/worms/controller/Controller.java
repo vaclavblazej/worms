@@ -28,6 +28,7 @@ public class Controller {
     private boolean RESTART = false;
     private long turn = 0;
     private int numbers = 1;
+    private int evolutionIterations;
 
     public Controller(Model model, Settings settings) {
         this.model = model;
@@ -35,6 +36,7 @@ public class Controller {
         this.timer = new Timer(SPEED_INITIAL, e -> tick());
         this.delay = new Timer(PAUSE_INITIAL, e -> startGame());
         this.playingPlayers = new ArrayList<>();
+        this.evolutionIterations = 10;
 
         model.reset();
     }
@@ -43,11 +45,30 @@ public class Controller {
         prepareAllPlayers();
         simulateMovement();
         checkLostPlayers();
-        // restart game if needed
         if (gameEnded()) {
             timer.stop();
-            model.reset();
+            reset();
             delay.start();
+        }
+    }
+
+    private void reset() {
+        model.reset();
+        if (turn % evolutionIterations == 0) {
+            System.out.print("Evolve, scores:");
+            int winnerId = 0, mx = -1;
+            for (Player player : model.getPlayers()) {
+                System.out.print(" " + player.getScore());
+                if (player.getScore() > mx) {
+                    mx = player.getScore();
+                    winnerId = player.getId();
+                }
+            }
+            System.out.println();
+            model.evolve(winnerId);
+            for (Player player : model.getPlayers()) {
+                player.setScore(0);
+            }
         }
     }
 
@@ -56,7 +77,7 @@ public class Controller {
         simulateMovement();
         checkLostPlayers();
         if (gameEnded()) {
-            model.reset();
+            reset();
             RESTART = true;
         }
     }
@@ -117,16 +138,7 @@ public class Controller {
             position.x += Math.cos(angle);
             position.y -= Math.sin(angle);
 
-            switch (worm.getDirection()) {
-                case LEFT:
-                    angle += settings.getMoveAngleChange();
-                    break;
-                case RIGHT:
-                    angle -= settings.getMoveAngleChange();
-                    break;
-                case STRAIGHT:
-                    break;
-            }
+            angle += worm.getDirection().getRotation(settings.getMoveAngleChange());
             if (angle >= 2 * Math.PI) {
                 angle -= 2 * Math.PI;
             } else if (angle < 0) {
@@ -197,5 +209,13 @@ public class Controller {
 
     public long getTurn() {
         return turn;
+    }
+
+    public int getEvolutionIterations() {
+        return evolutionIterations;
+    }
+
+    public void setEvolutionIterations(int evolutionIterations) {
+        this.evolutionIterations = evolutionIterations;
     }
 }

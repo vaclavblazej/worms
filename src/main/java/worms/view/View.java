@@ -13,7 +13,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.util.Iterator;
 
 /**
  * @author Patrik Faistaver
@@ -73,6 +75,10 @@ public class View extends JPanel implements ActionListener {
             g.drawString("" + player.getScore(), pos, 10);
             pos += 20;
         }
+//        g.setColor(Color.RED);
+//        for (Line2D line2D : model.getLines()) {
+//            g.drawLine((int) line2D.getX1(), (int) line2D.getY1(), (int) line2D.getX2(), (int) line2D.getY2());
+//        }
     }
 
     @Override
