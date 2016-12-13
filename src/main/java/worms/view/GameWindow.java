@@ -16,20 +16,16 @@ import worms.model.Model;
  */
 public class GameWindow extends JFrame {
 
-    private static View gamePlane;
-
     public GameWindow(Model model, Controller controller, Settings settings) {
         super("Cervi 1.0");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
         setResizable(false);
-        setLayout(new FlowLayout());
+        setLayout(new FlowLayout(SwingConstants.HORIZONTAL));
 
-        gamePlane = new View(model, controller, settings);
-        gamePlane.setPreferredSize(new Dimension(800+200, 600));
-        gamePlane.setFocusable(true);
+        View gamePlane = new View(model, controller, settings);
         add(gamePlane);
-        final EvolutionView evolutionView = new EvolutionView(model, controller, settings);
+        EvolutionView evolutionView = new EvolutionView(model, controller, settings);
         add(evolutionView);
         pack();
 

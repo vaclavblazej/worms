@@ -16,18 +16,19 @@ import java.util.List;
 public class AiNeuralBrain extends AiBrain {
 
     private static int RAYS = 10;
-    public List<Point.Double> others;
     private NeuralNetwork network;
 
+    public AiNeuralBrain(AiNeuralBrain copy) {
+        this.network = new NeuralNetwork(copy.getNetwork());
+    }
+
     public AiNeuralBrain() {
-        this.others = new ArrayList<>();
         this.network = new NeuralNetwork();
         network.prepare(RAYS, 1, 1);
     }
 
     @Override
     public void think(Worm worm, Model model) {
-        others.clear();
         final Point2D.Double position = worm.getPosition();
         double angle = worm.getAngle();
         Vector input = new Vector(RAYS);
@@ -35,10 +36,10 @@ public class AiNeuralBrain extends AiBrain {
         for (int i = 0; i < RAYS; i++) {
             angle += 2 * Math.PI / RAYS;
             double distance = model.getDistance(position, new Point2D.Double(Math.cos(angle), Math.sin(angle)));
-            input.setValue(i, Math.min(1, distance / 800));
+            input.set(i, sigmoid(distance / 500)); // precision for close walls
         }
         final Vector output = network.tick(input);
-        final Double result = sigmoid(output.get(0));
+        final Double result = output.get(0);
 
 //        System.out.println("VECTOR: " + network.getState());
         worm.setDirection(result);
@@ -58,6 +59,6 @@ public class AiNeuralBrain extends AiBrain {
     }
 
     private double sigmoid(double value) {
-        return 1 / (1 + Math.exp(-value));
+        return 2 / (1 + Math.exp(-value)) - 1;
     }
 }

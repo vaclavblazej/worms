@@ -49,17 +49,13 @@ public class Matrix {
                 double toAdd = matrix.get(i).get(j) * vector.get(j);
                 value += toAdd > 0 ? toAdd : (j == 0 ? toAdd : 0);
             }
-            result.setValue(i, value);
+            result.set(i, value);
         }
         return result;
     }
 
     public List<Vector> getMatrix() {
         return matrix;
-    }
-
-    public void setMatrix(List<Vector> matrix) {
-        this.matrix = matrix;
     }
 
     @Override

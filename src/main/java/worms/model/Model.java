@@ -5,6 +5,7 @@ import worms.Settings;
 import worms.ai.AiBrain;
 import worms.ai.AiNeuralBrain;
 import worms.ai.ComputerPlayer;
+import worms.ai.neuralnet.NeuralNetwork;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -51,7 +52,7 @@ public final class Model {
 //            } else {
 //                brain = new AiRandomBrain();
 //            }
-            players.add(new ComputerPlayer(i, "CompAi " + i, color, brain));
+            players.add(new ComputerPlayer("CompAi " + i, color, brain));
         }
         reset();
     }
@@ -81,14 +82,14 @@ public final class Model {
         double size = direction.distance(0, 0);
         direction.x /= size;
         direction.y /= size;
-        int len = 4;
+        int len = 4, jump = 2;
         pos.x += len * direction.x;
         pos.y -= len * direction.y;
         while (true) {
             final int mapColor = getMapColor((int) pos.x, (int) pos.y);
             if (mapColor != Color.BLACK.getRGB()) break;
-            pos.x += direction.x;
-            pos.y -= direction.y;
+            pos.x += jump * direction.x;
+            pos.y -= jump * direction.y;
         }
         lines.add(new Line2D.Double(point.x, point.y, pos.x, pos.y));
         return pos.distance(point);
@@ -127,14 +128,20 @@ public final class Model {
     public void evolve(int winnerId) {
         Player winnerPlayer = players.get(winnerId);
         if (!(winnerPlayer instanceof ComputerPlayer)) return;
-//        AiNeuralBrain brain = (AiNeuralBrain) ((ComputerPlayer) winnerPlayer).getBrain();
+        AiNeuralBrain brain = (AiNeuralBrain) ((ComputerPlayer) winnerPlayer).getBrain();
 
         for (int i = 0; i < players.size(); i++) {
             if (winnerId != i && players.get(i) instanceof ComputerPlayer) {
                 AiBrain brain1 = ((ComputerPlayer) players.get(i)).getBrain();
                 if (!(brain1 instanceof AiNeuralBrain)) continue;
 //                ((AiNeuralBrain) brain1).setNetwork(brain.getNetwork().mutate());
-                ((AiNeuralBrain) brain1).setNetwork(((AiNeuralBrain) brain1).getNetwork().mutate());
+                NeuralNetwork newNetwork;
+                if (random.nextInt() % 1000 < 5) {
+                    newNetwork = brain.getNetwork().mutate();
+                } else {
+                    newNetwork = ((AiNeuralBrain) brain1).getNetwork().mutate();
+                }
+                ((AiNeuralBrain) brain1).setNetwork(newNetwork);
             }
         }
         Collections.shuffle(players); // population has to accommodate for any start point

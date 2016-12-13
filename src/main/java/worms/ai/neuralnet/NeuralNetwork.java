@@ -9,41 +9,40 @@ import java.util.Random;
 public class NeuralNetwork {
 
     private static final Random random = new Random();
-    private int input, middle, output, size;
+    private int input, hidden, output, inSize, outSize;
     private Matrix matrix;
-    private Vector state;
+    private Vector inVector, outVector;
 
     public NeuralNetwork(NeuralNetwork copy) {
         this.input = copy.input;
-        this.middle = copy.middle;
+        this.hidden = copy.hidden;
         this.output = copy.output;
-        this.size = copy.size;
+        this.inSize = copy.inSize;
+        this.outSize = copy.outSize;
         this.matrix = new Matrix(copy.matrix);
-        this.state = new Vector(copy.state);
+        this.inVector = new Vector(copy.inVector);
+        this.outVector = new Vector(copy.outVector);
     }
 
     public NeuralNetwork() {
     }
 
-    public void prepare(int input, int middle, int output) {
+    public void prepare(int input, int hidden, int output) {
         this.input = input;
-        this.middle = middle;
+        this.hidden = hidden;
         this.output = output;
-        size = 1 + input + middle + output;
-        matrix = Matrix.getRandomMatrix(size, size);
-        List<Vector> values = this.matrix.getMatrix();
-        for (int i = 0; i < size; i++) {
-            values.get(0).setValue(i, i == 0 ? 1 : 0);
-        }
-//        System.out.println(this.matrix);
-        state = new Vector(size);
-        state.setValue(0, 1);
+        inSize = 1 + input + hidden;
+        outSize = output + hidden;
+        matrix = Matrix.getRandomMatrix(inSize, inSize);
+        inVector = new Vector(inSize);
+        inVector.set(0, -2.0 * output);
+        outVector = new Vector(outSize);
     }
 
     public void resetState() {
-        state = new Vector(size);
-        state.setValue(0, 1);
-        state.setSubvector(1 + input, 1 + input + middle, Vector.getRandomVector(middle));
+        // todo
+//        inVector = new Vector(inSize);
+//        inVector.setSubvector(1 + input, 1 + input + hidden, Vector.getRandomVector(hidden));
     }
 
     public Vector tick(Vector inputList) {
@@ -51,12 +50,13 @@ public class NeuralNetwork {
         if (inputList.size() != input) {
             throw new RuntimeException("inputlist has bad length " + inputList.size() + " != " + input);
         }
-        state.setValue(0, 1);
-        state.setSubvector(1, 1 + input, inputList);
+        inVector.setSubvector(1, 1 + input, inputList);
         // compute difference
-        state = matrix.cross(state);
+        outVector = matrix.cross(inVector);
+        // copy hidden layer
+        inVector.setSubvector(1 + input, inSize, outVector.getSubvector(output, outSize));
         // extract output
-        return state.getSubvector(size - output, size);
+        return outVector.getSubvector(0, output);
     }
 
     public NeuralNetwork mutate() {
@@ -70,13 +70,13 @@ public class NeuralNetwork {
         if (random.nextInt() % 1000 < 4) {
             jump = random.nextDouble() - 0.5;
         } else {
-            jump = 0.5 + (random.nextDouble() - 0.5) / 1000;
+            jump = (random.nextDouble() - 0.5) / 1000;
         }
-        vector.setValue(w, Math.min(1, Math.max(0, oldval + jump)));
+        vector.set(w, Math.min(1, Math.max(0, oldval + jump)));
         return result;
     }
 
-    public Vector getState() {
-        return state;
+    public Vector getInVector() {
+        return inVector;
     }
 }

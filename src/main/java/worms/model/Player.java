@@ -9,6 +9,8 @@ import java.awt.*;
  */
 public abstract class Player {
 
+    public static int newid = 0;
+
     private int id;
     private String name;
     private int score;
@@ -16,8 +18,8 @@ public abstract class Player {
     private boolean lost;
     private Color color;
 
-    public Player(int id, String name, Color color) {
-        this.id = id;
+    public Player(String name, Color color) {
+        this.id = newid++;
         this.name = name;
         this.color = color;
         this.score = 0;

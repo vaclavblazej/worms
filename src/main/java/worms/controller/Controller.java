@@ -22,19 +22,18 @@ public class Controller {
     private final Settings settings;
     private final ArrayList<Player> playingPlayers;
     private final int SPEED_INITIAL = 15; // 15 original, lower is faster
-    private final int PAUSE_INITIAL = 100;
     private Timer timer, delay;
     private boolean GRAPHICS = true;
     private boolean RESTART = false;
+    private boolean stop = false;
     private long turn = 0;
-    private int numbers = 1;
     private int evolutionIterations;
 
     public Controller(Model model, Settings settings) {
         this.model = model;
         this.settings = settings;
         this.timer = new Timer(SPEED_INITIAL, e -> tick());
-        this.delay = new Timer(PAUSE_INITIAL, e -> startGame());
+        this.delay = new Timer(10, e -> startGame());
         this.playingPlayers = new ArrayList<>();
         this.evolutionIterations = 10;
 
@@ -82,16 +81,20 @@ public class Controller {
         }
     }
 
-    public void startSession(int numbers) {
-        this.numbers = numbers;
+    public void startSimulation() {
+        stop = false;
         delay.start();
+    }
+
+    public void endSimulation() {
+        stop = true;
     }
 
     private void startGame() {
         delay.stop();
         if (GRAPHICS) {
             setupRound();
-            if (isValidIteration()) {
+            if (!shouldStop()) {
                 timer.start();
             }
         } else {
@@ -101,7 +104,7 @@ public class Controller {
                 public void run() {
                     super.run();
                     while (true) {
-                        if (GRAPHICS || !isValidIteration()) break;
+                        if (GRAPHICS || shouldStop()) break;
                         setupRound();
                         RESTART = false;
                         while (!RESTART) {
@@ -115,8 +118,8 @@ public class Controller {
         }
     }
 
-    private boolean isValidIteration() {
-        return numbers-- > 0;
+    private boolean shouldStop() {
+        return stop;
     }
 
     private void setupRound() {
@@ -138,7 +141,8 @@ public class Controller {
             position.x += Math.cos(angle);
             position.y -= Math.sin(angle);
 
-            angle += worm.getDirection().getRotation(settings.getMoveAngleChange());
+            double rotation = worm.getDirection().getRotation(settings.getMoveAngleChange());
+            angle += rotation;
             if (angle >= 2 * Math.PI) {
                 angle -= 2 * Math.PI;
             } else if (angle < 0) {
@@ -192,15 +196,11 @@ public class Controller {
     }
 
     private boolean gameEnded() {
-        return playingPlayers.size() <= 1;
+        return playingPlayers.size() <= 0;
     }
 
     public void setSPEED_INITIAL(int SPEED_INITIAL) {
         timer.setDelay(SPEED_INITIAL);
-    }
-
-    public void setPAUSE_INITIAL(int PAUSE_INITIAL) {
-        delay.setDelay(PAUSE_INITIAL);
     }
 
     public void setGRAPHICS(boolean GRAPHICS) {
