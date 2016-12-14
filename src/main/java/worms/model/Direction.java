@@ -17,6 +17,7 @@ public class Direction {
     }
 
     public void setDirection(double direction) {
+        if (direction < -1 || direction > 1) throw new RuntimeException("Invalid direction " + direction);
         this.direction = direction;
     }
 

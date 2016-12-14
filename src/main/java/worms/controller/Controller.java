@@ -21,116 +21,104 @@ public class Controller {
     private final Model model;
     private final Settings settings;
     private final ArrayList<Player> playingPlayers;
-    private final int SPEED_INITIAL = 15; // 15 original, lower is faster
-    private Timer timer, delay;
+    private int simulationDelay = 15;
+    private Timer timer;
     private boolean GRAPHICS = true;
-    private boolean RESTART = false;
     private boolean stop = false;
     private long turn = 0;
-    private int evolutionIterations;
+    private int roundsLeft;
+    private int tickNumber;
 
     public Controller(Model model, Settings settings) {
         this.model = model;
         this.settings = settings;
-        this.timer = new Timer(SPEED_INITIAL, e -> tick());
-        this.delay = new Timer(10, e -> startGame());
+        this.timer = new Timer(simulationDelay, e -> tick());
         this.playingPlayers = new ArrayList<>();
-        this.evolutionIterations = 10;
+        this.roundsLeft = 0;
+        this.stop = true;
 
-        model.reset();
+        this.reset();
     }
 
     private void tick() {
         prepareAllPlayers();
         simulateMovement();
         checkLostPlayers();
-        if (gameEnded()) {
-            timer.stop();
-            reset();
-            delay.start();
-        }
     }
 
     private void reset() {
         model.reset();
-        if (turn % evolutionIterations == 0) {
-            System.out.print("Evolve, scores:");
-            int winnerId = 0, mx = -1;
-            for (Player player : model.getPlayers()) {
-                System.out.print(" " + player.getScore());
-                if (player.getScore() > mx) {
-                    mx = player.getScore();
-                    winnerId = player.getId();
-                }
-            }
-            System.out.println();
-            model.evolve(winnerId);
-            for (Player player : model.getPlayers()) {
-                player.setScore(0);
-            }
-        }
-    }
-
-    private void quickTick() {
-        prepareAllPlayers();
-        simulateMovement();
-        checkLostPlayers();
-        if (gameEnded()) {
-            reset();
-            RESTART = true;
+        for (Player player : model.getPlayers()) {
+            player.setScore(0);
         }
     }
 
     public void startSimulation() {
         stop = false;
-        delay.start();
+        startAllRounds();
+    }
+
+    public void startSimulationInThread() {
+        roundsLeft = -1;
+        stop = false;
+        // break free of event thread
+        Thread thread = new Thread(this::startAllRounds);
+        thread.start();
     }
 
     public void endSimulation() {
         stop = true;
     }
 
-    private void startGame() {
-        delay.stop();
-        if (GRAPHICS) {
+    private void startAllRounds() {
+        while (true) {
+            if (shouldStop()) break;
             setupRound();
-            if (!shouldStop()) {
-                timer.start();
-            }
-        } else {
-            // break free of event thread
-            Thread thread = new Thread() {
-                @Override
-                public void run() {
-                    super.run();
-                    while (true) {
-                        if (GRAPHICS || shouldStop()) break;
-                        setupRound();
-                        RESTART = false;
-                        while (!RESTART) {
-                            quickTick();
-                        }
+            reset();
+            while (!gameEnded()) {
+                if (GRAPHICS) {
+                    try {
+                        Thread.sleep(simulationDelay);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    delay.start();
                 }
-            };
-            thread.start();
+                tick();
+            }
         }
     }
 
     private boolean shouldStop() {
+        if (roundsLeft-- == 0) {
+            stop = true;
+        }
         return stop;
     }
 
     private void setupRound() {
         turn++;
+        tickNumber = 0;
         playingPlayers.clear();
         for (Player player : model.getPlayers()) {
             playingPlayers.add(player);
         }
     }
 
+    public void evaluate(Player player) {
+        if (stop) {
+            ArrayList<Player> newPlayers = new ArrayList<>();
+            newPlayers.add(player);
+            model.setPlayers(newPlayers);
+            roundsLeft = 1;
+            this.reset();
+            this.startSimulation();
+        } else {
+            throw new RuntimeException("simulation already runs");
+        }
+    }
+
     private void simulateMovement() {
+        tickNumber++;
         for (Player player : playingPlayers) {
             Worm worm = player.getWorm();
             Point.Double position = worm.getPosition();
@@ -187,10 +175,8 @@ public class Controller {
         while (it.hasNext()) {
             Player player = it.next();
             if (player.hasLost()) {
+                player.setScore(tickNumber);
                 it.remove();
-                for (Player otherPlayer : playingPlayers) {
-                    otherPlayer.incrementScore();
-                }
             }
         }
     }
@@ -199,8 +185,8 @@ public class Controller {
         return playingPlayers.size() <= 0;
     }
 
-    public void setSPEED_INITIAL(int SPEED_INITIAL) {
-        timer.setDelay(SPEED_INITIAL);
+    public void setSimulationDelay(int simulationDelay) {
+        this.simulationDelay = simulationDelay;
     }
 
     public void setGRAPHICS(boolean GRAPHICS) {
@@ -211,11 +197,11 @@ public class Controller {
         return turn;
     }
 
-    public int getEvolutionIterations() {
-        return evolutionIterations;
+    public int getRoundsLeft() {
+        return roundsLeft;
     }
 
-    public void setEvolutionIterations(int evolutionIterations) {
-        this.evolutionIterations = evolutionIterations;
+    public void setRoundsLeft(int roundsLeft) {
+        this.roundsLeft = roundsLeft;
     }
 }

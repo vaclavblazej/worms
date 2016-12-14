@@ -1,5 +1,7 @@
 package worms;
 
+import worms.ai.evolution.EvolutionWrapper;
+import worms.ai.evolution.GeneticEvolution;
 import worms.controller.Controller;
 import worms.model.Model;
 import worms.view.GameWindow;
@@ -15,7 +17,8 @@ public class Main {
         Settings settings = new Settings();
         Model model = new Model(settings);
         Controller controller = new Controller(model, settings);
+        EvolutionWrapper evolution = new EvolutionWrapper(controller, model);
         model.initialize();
-        new GameWindow(model, controller, settings);
+        new GameWindow(model, controller, settings, evolution);
     }
 }

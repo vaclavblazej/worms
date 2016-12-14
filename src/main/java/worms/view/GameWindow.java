@@ -4,6 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import worms.Settings;
+import worms.ai.evolution.EvolutionWrapper;
 import worms.controller.Controller;
 import worms.controller.Input;
 import worms.model.Model;
@@ -16,7 +17,7 @@ import worms.model.Model;
  */
 public class GameWindow extends JFrame {
 
-    public GameWindow(Model model, Controller controller, Settings settings) {
+    public GameWindow(Model model, Controller controller, Settings settings, EvolutionWrapper evolution) {
         super("Cervi 1.0");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
@@ -25,7 +26,7 @@ public class GameWindow extends JFrame {
 
         View gamePlane = new View(model, controller, settings);
         add(gamePlane);
-        EvolutionView evolutionView = new EvolutionView(model, controller, settings);
+        EvolutionView evolutionView = new EvolutionView(model, controller, settings, evolution);
         add(evolutionView);
         pack();
 

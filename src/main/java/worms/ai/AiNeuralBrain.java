@@ -5,10 +5,7 @@ import worms.ai.neuralnet.Vector;
 import worms.model.Model;
 import worms.model.Worm;
 
-import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Václav Blažej
@@ -24,7 +21,7 @@ public class AiNeuralBrain extends AiBrain {
 
     public AiNeuralBrain() {
         this.network = new NeuralNetwork();
-        network.prepare(RAYS, 1, 1);
+        network.prepare(RAYS, 3, 1);
     }
 
     @Override
@@ -36,13 +33,13 @@ public class AiNeuralBrain extends AiBrain {
         for (int i = 0; i < RAYS; i++) {
             angle += 2 * Math.PI / RAYS;
             double distance = model.getDistance(position, new Point2D.Double(Math.cos(angle), Math.sin(angle)));
-            input.set(i, sigmoid(distance / 500)); // precision for close walls
+            input.set(i, 1 - sigmoid(distance / 200)); // precision for close walls
         }
         final Vector output = network.tick(input);
         final Double result = output.get(0);
 
 //        System.out.println("VECTOR: " + network.getState());
-        worm.setDirection(result);
+        worm.setDirection(sigmoid(result));
     }
 
     @Override
@@ -59,6 +56,7 @@ public class AiNeuralBrain extends AiBrain {
     }
 
     private double sigmoid(double value) {
+//        return 1 / (1 + Math.exp(-value));
         return 2 / (1 + Math.exp(-value)) - 1;
     }
 }

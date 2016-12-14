@@ -8,8 +8,8 @@ import java.util.List;
  */
 public class Matrix {
 
-    private int height, width;
-    private List<Vector> matrix;
+    public int height, width;
+    public List<Vector> matrix;
 
     public Matrix(Matrix copy) {
         this.height = copy.height;
@@ -41,7 +41,7 @@ public class Matrix {
     }
 
     public Vector cross(Vector vector) {
-        assert vector.size() == width;
+        if (vector.size() != width) throw new RuntimeException("bad matrix vector sizes");
         Vector result = new Vector(matrix.size());
         for (int i = 0; i < height; i++) {
             double value = 0;

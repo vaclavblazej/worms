@@ -25,7 +25,7 @@ public class Vector extends ArrayList<Double> {
         Random random = new Random();
         Vector result = new Vector(size);
         for (int i = 0; i < size; i++) {
-            result.set(i, random.nextDouble() / size / size);
+            result.set(i, random.nextDouble());
         }
         return result;
     }

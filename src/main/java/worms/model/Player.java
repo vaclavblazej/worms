@@ -35,14 +35,6 @@ public abstract class Player {
         this.id = id;
     }
 
-    public void incrementScore() {
-        incrementScoreBy(1);
-    }
-
-    public void incrementScoreBy(int value) {
-        score += value;
-    }
-
     public Color getColor() {
         return color;
     }
@@ -60,6 +52,7 @@ public abstract class Player {
     }
 
     public int getScore() {
+//        System.out.println("get score " + score + "   " + this);
         return score;
     }
 
@@ -84,4 +77,13 @@ public abstract class Player {
     }
 
     public abstract void prepare(Model model);
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", score=" + score +
+                '}';
+    }
 }

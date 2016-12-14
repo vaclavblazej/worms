@@ -5,14 +5,12 @@ import worms.Settings;
 import worms.ai.AiBrain;
 import worms.ai.AiNeuralBrain;
 import worms.ai.ComputerPlayer;
-import worms.ai.neuralnet.NeuralNetwork;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 import java.util.function.Supplier;
 
@@ -24,11 +22,11 @@ import java.util.function.Supplier;
 public final class Model {
 
     private final ArrayList<Player> players;
-    private final Point.Double origin;
     private final Settings settings;
     private final ArrayList<Line2D> lines;
     private final Random random = new Random();
     private final Supplier<Float> func = () -> ((random.nextFloat() % 0.7f) + 0.3f) % 1;
+    private Point.Double origin;
     private BufferedImage image;
 
     public Model(Settings settings) {
@@ -65,6 +63,12 @@ public final class Model {
         return players;
     }
 
+    public void setPlayers(ArrayList<Player> players) {
+        this.players.clear();
+        this.players.addAll(players);
+    }
+
+
     public Player getPlayer(int index) {
         return players.get(index);
     }
@@ -91,7 +95,7 @@ public final class Model {
             pos.x += jump * direction.x;
             pos.y -= jump * direction.y;
         }
-        lines.add(new Line2D.Double(point.x, point.y, pos.x, pos.y));
+//        lines.add(new Line2D.Double(point.x, point.y, pos.x, pos.y));
         return pos.distance(point);
     }
 
@@ -125,27 +129,27 @@ public final class Model {
         return image.getRGB(x, y);
     }
 
-    public void evolve(int winnerId) {
-        Player winnerPlayer = players.get(winnerId);
-        if (!(winnerPlayer instanceof ComputerPlayer)) return;
-        AiNeuralBrain brain = (AiNeuralBrain) ((ComputerPlayer) winnerPlayer).getBrain();
-
-        for (int i = 0; i < players.size(); i++) {
-            if (winnerId != i && players.get(i) instanceof ComputerPlayer) {
-                AiBrain brain1 = ((ComputerPlayer) players.get(i)).getBrain();
-                if (!(brain1 instanceof AiNeuralBrain)) continue;
-//                ((AiNeuralBrain) brain1).setNetwork(brain.getNetwork().mutate());
-                NeuralNetwork newNetwork;
-                if (random.nextInt() % 1000 < 5) {
-                    newNetwork = brain.getNetwork().mutate();
-                } else {
-                    newNetwork = ((AiNeuralBrain) brain1).getNetwork().mutate();
-                }
-                ((AiNeuralBrain) brain1).setNetwork(newNetwork);
-            }
-        }
-        Collections.shuffle(players); // population has to accommodate for any start point
-    }
+//    public void evolve(int winnerId) {
+//        Player winnerPlayer = players.get(winnerId);
+//        if (!(winnerPlayer instanceof ComputerPlayer)) return;
+//        AiNeuralBrain brain = (AiNeuralBrain) ((ComputerPlayer) winnerPlayer).getBrain();
+//
+//        for (int i = 0; i < players.size(); i++) {
+//            if (winnerId != i && players.get(i) instanceof ComputerPlayer) {
+//                AiBrain brain1 = ((ComputerPlayer) players.get(i)).getBrain();
+//                if (!(brain1 instanceof AiNeuralBrain)) continue;
+////                ((AiNeuralBrain) brain1).setNetwork(brain.getNetwork().mutate());
+//                NeuralNetwork newNetwork;
+//                if (random.nextInt() % 1000 < 5) {
+//                    newNetwork = brain.getNetwork().mutate();
+//                } else {
+//                    newNetwork = ((AiNeuralBrain) brain1).getNetwork().mutate();
+//                }
+//                ((AiNeuralBrain) brain1).setNetwork(newNetwork);
+//            }
+//        }
+//        Collections.shuffle(players); // population has to accommodate for any start point
+//    }
 
     public ArrayList<Line2D> getLines() {
         return new ArrayList<>(lines);

@@ -61,8 +61,10 @@ public class View extends JPanel implements ActionListener {
         int pos = 10;
         for (Player player : model.getPlayers()) {
             g.setColor(player.getColor());
-            g.drawString("" + player.getScore(), pos, 10);
-            pos += 20;
+            String str = ""+player.getScore();
+            g.drawString(str, pos, 10);
+            double length = getFontMetrics(getFont()).getStringBounds(str, getGraphics()).getWidth();
+            pos += length + 4;
         }
         g.setColor(Color.RED);
 //        for (Line2D line2D : model.getLines()) {
