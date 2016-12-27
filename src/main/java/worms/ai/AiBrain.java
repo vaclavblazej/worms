@@ -3,12 +3,13 @@ package worms.ai;
 import worms.model.Model;
 import worms.model.Worm;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
  * @author Václav Blažej
  */
-public abstract class AiBrain {
+public abstract class AiBrain implements Serializable{
 
     protected Random random;
 

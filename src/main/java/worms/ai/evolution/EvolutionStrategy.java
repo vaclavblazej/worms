@@ -15,7 +15,7 @@ public abstract class EvolutionStrategy {
 
     protected final Controller controller;
     protected final Model model;
-    protected List<Individual> population;
+    protected final List<Individual> population;
 
     public EvolutionStrategy(Controller controller, Model model) {
         this.controller = controller;
@@ -33,5 +33,14 @@ public abstract class EvolutionStrategy {
         if (!(individual instanceof Player)) throw new RuntimeException("Individual is not a player");
         controller.evaluate((Player) individual);
         return individual.fitness();
+    }
+
+    public List<Individual> getPopulation() {
+        return population;
+    }
+
+    public void setPopulation(List<Individual> newPopulation) {
+        population.clear();
+        population.addAll(newPopulation);
     }
 }

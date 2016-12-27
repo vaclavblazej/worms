@@ -1,12 +1,13 @@
 package worms.ai.neuralnet;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Václav Blažej
  */
-public class Matrix {
+public class Matrix implements Serializable{
 
     public int height, width;
     public List<Vector> matrix;

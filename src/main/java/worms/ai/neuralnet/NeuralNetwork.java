@@ -1,12 +1,15 @@
 package worms.ai.neuralnet;
 
+import worms.Common;
+
+import java.io.Serializable;
 import java.util.List;
 import java.util.Random;
 
 /**
  * @author Václav Blažej
  */
-public class NeuralNetwork {
+public class NeuralNetwork implements Serializable{
 
     private static final Random random = new Random();
     private int input, hidden, output, inSize, outSize;
@@ -56,7 +59,7 @@ public class NeuralNetwork {
         // copy hidden layer
         Vector hiddenLayer = outVector.getSubvector(output, outSize);
         for (int i = 0; i < hiddenLayer.size(); i++) {
-            hiddenLayer.set(i, sigmoid(hiddenLayer.get(i)));
+            hiddenLayer.set(i, Common.sigmoid(hiddenLayer.get(i)));
         }
         inVector.setSubvector(1 + input, inSize, hiddenLayer);
 //         extract output
@@ -91,9 +94,6 @@ public class NeuralNetwork {
         return inVector;
     }
 
-    private double sigmoid(double value) {
-        return 1 / (1 + Math.exp(-value));
-    }
 
     public Matrix getMatrix() {
         return matrix;

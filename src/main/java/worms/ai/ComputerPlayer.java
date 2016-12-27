@@ -1,5 +1,6 @@
 package worms.ai;
 
+import worms.Common;
 import worms.ai.evolution.Individual;
 import worms.ai.neuralnet.Matrix;
 import worms.ai.neuralnet.NeuralNetwork;
@@ -15,6 +16,9 @@ import java.util.Random;
 public class ComputerPlayer extends Player implements Individual {
 
     private AiBrain brain;
+
+    protected ComputerPlayer() {
+    }
 
     public ComputerPlayer(String name, Color color, AiBrain brain) {
         super(name, color);
@@ -64,6 +68,6 @@ public class ComputerPlayer extends Player implements Individual {
         }
         AiNeuralBrain brain = new AiNeuralBrain();
         brain.setNetwork(neuralNetwork);
-        return new ComputerPlayer(this.getName(), this.getColor(), brain);
+        return new ComputerPlayer(this.getName(), Common.randomColor(), brain);
     }
 }

@@ -1,12 +1,13 @@
 package worms.ai.neuralnet;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
 /**
  * @author Václav Blažej
  */
-public class Vector extends ArrayList<Double> {
+public class Vector extends ArrayList<Double> implements Serializable{
 
     public Vector(Vector copy) {
         this.clear();

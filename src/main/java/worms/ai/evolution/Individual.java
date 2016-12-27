@@ -1,9 +1,11 @@
 package worms.ai.evolution;
 
+import java.io.Serializable;
+
 /**
  * @author Václav Blažej
  */
-public interface Individual {
+public interface Individual extends Serializable{
 
     int fitness();
 

@@ -15,11 +15,13 @@ import java.util.List;
 public class GeneticEvolution extends EvolutionStrategy {
 
     private SelectionStrategy strategy;
+    private SelectionStrategy elitism;
     private boolean running;
 
     public GeneticEvolution(Controller controller, Model model) {
         super(controller, model);
         this.strategy = new RouletteStrategy();
+        this.elitism = new EliteStrategy();
         this.running = false;
     }
 
@@ -66,7 +68,8 @@ public class GeneticEvolution extends EvolutionStrategy {
             double c = 1;
             for (Individual child : children) {
                 this.evaluate(child);
-                childrenProbabilities.add(c++);
+                childrenProbabilities.add(c * c);
+                c++;
             }
             children.sort(Comparator.comparingInt(Individual::fitness));
             population.sort(Comparator.comparingInt(Individual::fitness));
@@ -76,6 +79,7 @@ public class GeneticEvolution extends EvolutionStrategy {
             }
             System.out.println();
             List<Individual> newGeneration = new ArrayList<>();
+            newGeneration.add(elitism.select(children, childrenProbabilities));
             while (newGeneration.size() < population.size()) {
                 newGeneration.add(strategy.select(children, childrenProbabilities));
             }
@@ -87,8 +91,7 @@ public class GeneticEvolution extends EvolutionStrategy {
                 System.out.print(child.fitness() + " ");
             }
             System.out.println();
-            population.clear();
-            population.addAll(newGeneration);
+            setPopulation(newGeneration);
         }
 
     }
@@ -100,4 +103,5 @@ public class GeneticEvolution extends EvolutionStrategy {
     private boolean stopCondition() {
         return !running;
     }
+
 }

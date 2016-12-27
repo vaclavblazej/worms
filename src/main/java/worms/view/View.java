@@ -35,7 +35,7 @@ public class View extends JPanel implements ActionListener {
         this.settings = settings;
         this.setPreferredSize(new Dimension(800, 600));
         this.setFocusable(true);
-        this.timer = new Timer(40, this);
+        this.timer = new Timer(100, this);
         SwingUtilities.invokeLater(timer::start);
     }
 

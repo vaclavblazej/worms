@@ -2,13 +2,14 @@ package worms.model;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 
 /**
  * @author Patrik Faistaver
  * @author Václav Blažej
  * @author Štěpán Plachý
  */
-public final class Worm {
+public final class Worm implements Serializable{
 
     private Point.Double position;
     private double angle;

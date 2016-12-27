@@ -1,5 +1,6 @@
 package worms.model;
 
+import worms.Common;
 import worms.MyLine;
 import worms.Settings;
 import worms.ai.AiBrain;
@@ -25,7 +26,6 @@ public final class Model {
     private final Settings settings;
     private final ArrayList<Line2D> lines;
     private final Random random = new Random();
-    private final Supplier<Float> func = () -> ((random.nextFloat() % 0.7f) + 0.3f) % 1;
     private Point.Double origin;
     private BufferedImage image;
 
@@ -43,7 +43,7 @@ public final class Model {
 //        }
 
         for (int i = 0; i < playerCount; i++) {
-            final Color color = Color.getHSBColor(func.get(), func.get(), func.get());
+            final Color color = Common.randomColor();
             AiBrain brain;
 //            if (i == 0) {
             brain = new AiNeuralBrain();

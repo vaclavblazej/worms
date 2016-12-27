@@ -9,6 +9,9 @@ import java.awt.*;
  */
 public abstract class Player {
 
+    protected Player(){
+    }
+
     public static int newid = 0;
 
     private int id;
