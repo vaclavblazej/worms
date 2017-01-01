@@ -1,5 +1,6 @@
 package worms.ai.evolution;
 
+import worms.Settings;
 import worms.controller.Controller;
 import worms.model.Model;
 
@@ -10,8 +11,8 @@ public class EvolutionWrapper {
 
     private GeneticEvolution evolutionStrategy;
 
-    public EvolutionWrapper(Controller controller, Model model) {
-        this.evolutionStrategy = new GeneticEvolution(controller, model);
+    public EvolutionWrapper(Controller controller, Model model, Settings settings) {
+        this.evolutionStrategy = new GeneticEvolution(controller, model, settings);
 //        evolutionStrategy.setAsMainEvolutionMethod();
     }
 

@@ -1,17 +1,20 @@
 package worms;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- *
  * @author Patrik Faistaver
  * @author Václav Blažej
  * @author Štěpán Plachý
  */
 public final class Settings implements Serializable {
 
+    private final ArrayList<String> names;
+    private final ArrayList<Integer> leftMap;
+    private final ArrayList<Integer> rightMap;
+    private final ArrayList<Color> colors;
     private boolean loaded = false;
     private int playerCount;
     private int maximumPlayerCount;
@@ -20,12 +23,9 @@ public final class Settings implements Serializable {
     private int phaseShiftHeadsUpTime;
     private int windowWidth;
     private int windowHeight;
-
+    private int childrenSize;
+    private int populationSize;
     private double moveAngleChange;
-    private final ArrayList<String> names;
-    private final ArrayList<Integer> leftMap;
-    private final ArrayList<Integer> rightMap;
-    private final ArrayList<Color> colors;
     //todo String languageId;
 
     public Settings() {
@@ -36,7 +36,9 @@ public final class Settings implements Serializable {
         phaseShiftHeadsUpTime = 5;
         windowWidth = 800;
         windowHeight = 600;
-        moveAngleChange = 2*Math.PI/180.;
+        populationSize = 100;
+        childrenSize = 200;
+        moveAngleChange = 2 * Math.PI / 180.;
         names = new ArrayList<>();
         leftMap = new ArrayList<>();
         rightMap = new ArrayList<>();
@@ -143,5 +145,21 @@ public final class Settings implements Serializable {
 
     public void setMaximumPlayerCount(int maximumPlayerCount) {
         this.maximumPlayerCount = maximumPlayerCount;
+    }
+
+    public int getChildrenSize() {
+        return childrenSize;
+    }
+
+    public void setChildrenSize(int childrenSize) {
+        this.childrenSize = childrenSize;
+    }
+
+    public int getPopulationSize() {
+        return populationSize;
+    }
+
+    public void setPopulationSize(int populationSize) {
+        this.populationSize = populationSize;
     }
 }

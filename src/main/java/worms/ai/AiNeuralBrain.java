@@ -30,7 +30,6 @@ public class AiNeuralBrain extends AiBrain {
         final Point2D.Double position = worm.getPosition();
         double angle = worm.getAngle();
         Vector input = new Vector(RAYS);
-        model.clearLines();
         for (int i = 0; i < RAYS; i++) {
             angle += 2 * Math.PI / RAYS;
             double distance = model.getDistance(position, new Point2D.Double(Math.cos(angle), Math.sin(angle)));
@@ -41,7 +40,7 @@ public class AiNeuralBrain extends AiBrain {
         final Double right = output.get(1);
 
 //        System.out.println("VECTOR: " + network.getState());
-        worm.setDirection(2 * Common.sigmoid(left - right) - 1);
+        worm.setDirection(2 * Common.sigmoid(2 * (left - right)) - 1);
     }
 
     @Override

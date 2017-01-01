@@ -13,7 +13,7 @@ public class RouletteStrategy implements SelectionStrategy {
     @Override
     public Individual select(List<Individual> population, List<Double> probability) {
         double sum = probability.stream().mapToDouble(Double::doubleValue).sum();
-        double d = random.nextDouble() * 10000000;
+        double d = random.nextDouble() * 1000000000000L;
         d = d % sum;
         int idx = -1;
         while (d > 0) {

@@ -8,12 +8,10 @@ import worms.ai.AiNeuralBrain;
 import worms.ai.ComputerPlayer;
 
 import java.awt.*;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.function.Supplier;
 
 /**
  * @author Patrik Faistaver
@@ -24,39 +22,41 @@ public final class Model {
 
     private final ArrayList<Player> players;
     private final Settings settings;
-    private final ArrayList<Line2D> lines;
     private final Random random = new Random();
-    private Point.Double origin;
+    private ArrayList<Scenario> scenarios;
     private BufferedImage image;
 
     public Model(Settings settings) {
         this.settings = settings;
-        players = new ArrayList<>();
-        origin = new Point.Double(settings.getWindowWidth() / 2, settings.getWindowHeight() / 2);
-        lines = new ArrayList<>();
+        this.scenarios = new ArrayList<>();
+        this.players = new ArrayList<>();
+        setupScenarios();
+    }
+
+    private void setupScenarios() {
+        this.scenarios.clear();
+        Point.Double origin = new Point.Double(settings.getWindowWidth() / 2, settings.getWindowHeight() / 2);
+        BufferedImage bufferedImage = new BufferedImage(settings.getWindowWidth() + 1, settings.getWindowHeight() + 1, BufferedImage.TYPE_INT_RGB);
+//        Scenario basicScenario = new Scenario(origin, image = bufferedImage, Common.getRandomRadian());
+        for (int i = 0; true; i++) {
+            BufferedImage image = Common.loadImage("scenarios/" + (i + 1) + ".bmp");
+            if (image == null) {
+                break;
+            }
+            this.scenarios.add(new Scenario(origin, image, Common.getRandomRadian()));
+        }
+//        this.scenarios.add(basicScenario);
     }
 
     public void initialize() {
         final int playerCount = settings.getPlayerCount();
-//        for (int i = 0; i < playerCount; i++) {
-//            players.add(new HumanPlayer(settings.getNames().get(i), settings.getColors().get(i)));
-//        }
 
         for (int i = 0; i < playerCount; i++) {
             final Color color = Common.randomColor();
             AiBrain brain;
-//            if (i == 0) {
             brain = new AiNeuralBrain();
-//            } else {
-//                brain = new AiRandomBrain();
-//            }
             players.add(new ComputerPlayer("CompAi " + i, color, brain));
         }
-        reset();
-    }
-
-    public Point2D.Double getOrigin() {
-        return origin;
     }
 
     public ArrayList<Player> getPlayers() {
@@ -67,7 +67,6 @@ public final class Model {
         this.players.clear();
         this.players.addAll(players);
     }
-
 
     public Player getPlayer(int index) {
         return players.get(index);
@@ -99,16 +98,18 @@ public final class Model {
         return pos.distance(point);
     }
 
-    public void reset() {
-        image = new BufferedImage(settings.getWindowWidth() + 1, settings.getWindowHeight() + 1, BufferedImage.TYPE_INT_RGB);
-
+    public void reset(int scenarioId) {
+        Scenario scenario = scenarios.get(scenarioId);
+        loadScenario(scenario);
         double degreeChange = 2 * Math.PI / settings.getPlayerCount();
-        double degree = 2 * Math.PI * random.nextDouble();
+        double degree = scenario.degree;
+        Point2D.Double origin = scenario.origin;
         for (Player player : players) {
             Worm worm = player.getWorm();
             worm.setPosition(origin.x, origin.y);
             worm.setAngle(degree);
             worm.setDirection(Direction.STRAIGHT);
+            worm.setPhaseShiftTimer(settings.getPhaseShiftDuration());
             player.setLost(false);
             degree += degreeChange;
             if (player instanceof ComputerPlayer) {
@@ -123,39 +124,17 @@ public final class Model {
     }
 
     public int getMapColor(int x, int y) {
-        if (x > settings.getWindowWidth() || x <= 0 || y > settings.getWindowHeight() || y <= 0) {
+        if (x >= image.getWidth() || x < 0 || y >= image.getHeight() || y < 0) {
             return Color.white.getRGB();
         }
         return image.getRGB(x, y);
     }
 
-//    public void evolve(int winnerId) {
-//        Player winnerPlayer = players.get(winnerId);
-//        if (!(winnerPlayer instanceof ComputerPlayer)) return;
-//        AiNeuralBrain brain = (AiNeuralBrain) ((ComputerPlayer) winnerPlayer).getBrain();
-//
-//        for (int i = 0; i < players.size(); i++) {
-//            if (winnerId != i && players.get(i) instanceof ComputerPlayer) {
-//                AiBrain brain1 = ((ComputerPlayer) players.get(i)).getBrain();
-//                if (!(brain1 instanceof AiNeuralBrain)) continue;
-////                ((AiNeuralBrain) brain1).setNetwork(brain.getNetwork().mutate());
-//                NeuralNetwork newNetwork;
-//                if (random.nextInt() % 1000 < 5) {
-//                    newNetwork = brain.getNetwork().mutate();
-//                } else {
-//                    newNetwork = ((AiNeuralBrain) brain1).getNetwork().mutate();
-//                }
-//                ((AiNeuralBrain) brain1).setNetwork(newNetwork);
-//            }
-//        }
-//        Collections.shuffle(players); // population has to accommodate for any start point
-//    }
-
-    public ArrayList<Line2D> getLines() {
-        return new ArrayList<>(lines);
+    public void loadScenario(Scenario scenario) {
+        image = Common.deepCopy(scenario.image);
     }
 
-    public void clearLines() {
-        lines.clear();
+    public int getNumberOfScenarios() {
+        return scenarios.size();
     }
 }

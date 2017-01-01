@@ -37,7 +37,7 @@ public class Controller {
         this.roundsLeft = 0;
         this.stop = true;
 
-        this.reset();
+        this.reset(0);
     }
 
     private void tick() {
@@ -46,11 +46,8 @@ public class Controller {
         checkLostPlayers();
     }
 
-    private void reset() {
-        model.reset();
-        for (Player player : model.getPlayers()) {
-            player.setScore(0);
-        }
+    private void reset(int scenarioId) {
+        model.reset(scenarioId);
     }
 
     public void startSimulation() {
@@ -74,7 +71,6 @@ public class Controller {
         while (true) {
             if (shouldStop()) break;
             setupRound();
-            reset();
             while (!gameEnded()) {
                 if (GRAPHICS) {
                     try {
@@ -106,12 +102,15 @@ public class Controller {
 
     public void evaluate(Player player) {
         if (stop) {
-            ArrayList<Player> newPlayers = new ArrayList<>();
-            newPlayers.add(player);
-            model.setPlayers(newPlayers);
-            roundsLeft = 1;
-            this.reset();
-            this.startSimulation();
+            player.setScore(0);
+            for (int i = 0; i < model.getNumberOfScenarios(); i++) {
+                ArrayList<Player> newPlayers = new ArrayList<>();
+                newPlayers.add(player);
+                model.setPlayers(newPlayers);
+                roundsLeft = 1;
+                this.reset(i);
+                this.startSimulation();
+            }
         } else {
             throw new RuntimeException("simulation already runs");
         }
@@ -175,7 +174,7 @@ public class Controller {
         while (it.hasNext()) {
             Player player = it.next();
             if (player.hasLost()) {
-                player.setScore(tickNumber);
+                player.setScore(player.getScore() + tickNumber);
                 it.remove();
             }
         }

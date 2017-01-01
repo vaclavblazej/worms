@@ -17,7 +17,7 @@ public class Main {
         Settings settings = new Settings();
         Model model = new Model(settings);
         Controller controller = new Controller(model, settings);
-        EvolutionWrapper evolution = new EvolutionWrapper(controller, model);
+        EvolutionWrapper evolution = new EvolutionWrapper(controller, model, settings);
         model.initialize();
         new GameWindow(model, controller, settings, evolution);
     }

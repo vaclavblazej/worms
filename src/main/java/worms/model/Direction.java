@@ -12,7 +12,7 @@ public class Direction implements Serializable{
     public static final double STRAIGHT = 0.5;
     public static final double RIGHT = 1;
 
-    private double direction; // 0 left, 0.5 straight, 1 right
+    private double direction; // 1 left, 0 straight, -1 right
 
     public double getDirection() {
         return direction;
