@@ -55,7 +55,6 @@ public abstract class Player {
     }
 
     public int getScore() {
-//        System.out.println("get score " + score + "   " + this);
         return score;
     }
 

@@ -1,16 +1,15 @@
 package worms.view;
 
-import java.awt.*;
-import javax.swing.*;
-
 import worms.Settings;
 import worms.ai.evolution.EvolutionWrapper;
 import worms.controller.Controller;
 import worms.controller.Input;
 import worms.model.Model;
 
+import javax.swing.*;
+import java.awt.*;
+
 /**
- *
  * @author Patrik Faistaver
  * @author Václav Blažej
  * @author Štěpán Plachý
@@ -26,7 +25,7 @@ public class GameWindow extends JFrame {
 
         View gamePlane = new View(model, controller, settings);
         add(gamePlane);
-        EvolutionView evolutionView = new EvolutionView(model, controller, settings, evolution);
+        EvolutionView evolutionView = new EvolutionView(gamePlane, model, controller, settings, evolution);
         add(evolutionView);
         pack();
 

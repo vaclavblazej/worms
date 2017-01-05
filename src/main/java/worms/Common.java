@@ -1,10 +1,9 @@
 package worms;
 
+import worms.model.CachedBitmap;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
 import java.io.*;
 import java.net.URL;
 import java.util.Random;
@@ -56,18 +55,11 @@ public final class Common {
         return e;
     }
 
-    public static BufferedImage deepCopy(BufferedImage bi) {
-        ColorModel cm = bi.getColorModel();
-        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-        WritableRaster raster = bi.copyData(null);
-        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-    }
-
-    public static BufferedImage loadImage(String fileName) {
+    public static CachedBitmap loadImage(String fileName) {
         try {
             URL file = Common.class.getClassLoader().getResource(fileName);
             if (file == null) return null;
-            return ImageIO.read(file);
+            return new CachedBitmap(ImageIO.read(file));
         } catch (IOException ignored) {
             return null;
         }

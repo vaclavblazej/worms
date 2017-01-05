@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author Václav Blažej
  */
-public class Matrix implements Serializable{
+public class Matrix implements Serializable {
 
     public int height, width;
     public List<Vector> matrix;
@@ -48,11 +48,21 @@ public class Matrix implements Serializable{
             double value = 0;
             for (int j = 0; j < width; j++) {
                 double toAdd = matrix.get(i).get(j) * vector.get(j);
-                value += toAdd > 0 ? toAdd : (j == 0 ? toAdd : 0);
+                value += toAdd;
             }
             result.set(i, value);
         }
         return result;
+    }
+
+    public double distance(Matrix mat) {
+        double res = 0;
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                res += Math.abs(getMatrix().get(i).get(j) - mat.getMatrix().get(i).get(j));
+            }
+        }
+        return res;
     }
 
     public List<Vector> getMatrix() {

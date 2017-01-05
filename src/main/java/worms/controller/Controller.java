@@ -9,7 +9,9 @@ import worms.model.Worm;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Patrik Faistaver
@@ -20,8 +22,8 @@ public class Controller {
 
     private final Model model;
     private final Settings settings;
-    private final ArrayList<Player> playingPlayers;
-    private int simulationDelay = 15;
+    private final List<Player> playingPlayers;
+    private int simulationDelay = 150;
     private Timer timer;
     private boolean GRAPHICS = true;
     private boolean stop = false;
@@ -33,7 +35,7 @@ public class Controller {
         this.model = model;
         this.settings = settings;
         this.timer = new Timer(simulationDelay, e -> tick());
-        this.playingPlayers = new ArrayList<>();
+        this.playingPlayers = Collections.synchronizedList(new ArrayList<Player>());
         this.roundsLeft = 0;
         this.stop = true;
 
@@ -56,7 +58,7 @@ public class Controller {
     }
 
     public void startSimulationInThread() {
-        roundsLeft = -1;
+//        roundsLeft = -1;
         stop = false;
         // break free of event thread
         Thread thread = new Thread(this::startAllRounds);
@@ -74,7 +76,7 @@ public class Controller {
             while (!gameEnded()) {
                 if (GRAPHICS) {
                     try {
-                        Thread.sleep(simulationDelay);
+                        Thread.sleep(simulationDelay / 10, (simulationDelay % 10) * 100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -101,11 +103,22 @@ public class Controller {
     }
 
     public void evaluate(Player player) {
+        ArrayList<Player> players = new ArrayList<>();
+        players.add(player);
+//        AiNeuralBrain brain = new AiNeuralBrain((AiNeuralBrain) ((ComputerPlayer) player).getBrain());
+//        Player cp = new ComputerPlayer("cp", Color.RED, brain);
+//        players.add(cp);
+        evaluate(players);
+    }
+
+    public void evaluate(List<Player> players) {
         if (stop) {
-            player.setScore(0);
+            for (Player player : players) {
+                player.setScore(0);
+            }
             for (int i = 0; i < model.getNumberOfScenarios(); i++) {
                 ArrayList<Player> newPlayers = new ArrayList<>();
-                newPlayers.add(player);
+                newPlayers.addAll(players);
                 model.setPlayers(newPlayers);
                 roundsLeft = 1;
                 this.reset(i);

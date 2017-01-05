@@ -19,7 +19,7 @@ public class Direction implements Serializable{
     }
 
     public void setDirection(double direction) {
-        if (direction < -1 || direction > 1) throw new RuntimeException("Invalid direction " + direction);
+        if (direction < 0 || direction > 1) throw new RuntimeException("Invalid direction " + direction);
         this.direction = direction;
     }
 

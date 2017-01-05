@@ -9,7 +9,7 @@ import java.util.Random;
 /**
  * @author Václav Blažej
  */
-public class NeuralNetwork implements Serializable{
+public class NeuralNetwork implements Serializable {
 
     private static final Random random = new Random();
     private int input, hidden, output, inSize, outSize;
@@ -27,10 +27,7 @@ public class NeuralNetwork implements Serializable{
         this.outVector = new Vector(copy.outVector);
     }
 
-    public NeuralNetwork() {
-    }
-
-    public void prepare(int input, int hidden, int output) {
+    public NeuralNetwork(int input, int hidden, int output) {
         this.input = input;
         this.hidden = hidden;
         this.output = output;
@@ -40,6 +37,9 @@ public class NeuralNetwork implements Serializable{
         inVector = new Vector(inSize);
         inVector.set(0, -1.0 * inSize);
         outVector = new Vector(outSize);
+    }
+
+    public NeuralNetwork() {
     }
 
     public void resetState() {
@@ -71,21 +71,21 @@ public class NeuralNetwork implements Serializable{
 
     public NeuralNetwork mutate() {
         NeuralNetwork result = new NeuralNetwork(this);
-        if (random.nextInt() % 1000 < 10) {
-            result.matrix = Matrix.getRandomMatrix(outSize, inSize);
-        } else {
+        double type = Common.random.nextDouble();
+        int num = Common.getRandomBoolean(0.08) ? 100 : 1;
+        for (int i = 0; i < num; i++) {
             List<Vector> matrix = result.matrix.getMatrix();
             int h = random.nextInt(matrix.size() - 1);
             Vector vector = matrix.get(h + 1);
             int w = random.nextInt(vector.size());
-            double oldval = vector.get(w);
-            double jump;
-            if (random.nextInt() % 100 < 4) {
-                jump = random.nextDouble() - 0.5;
+            double change;
+            if (type < 0.04) {
+                change = (random.nextDouble() - 0.5 / 10);
             } else {
-                jump = (random.nextDouble() - 0.5) / 1000;
+                change = (random.nextDouble() - 0.5) / 1000;
             }
-            vector.set(w, Math.min(1, Math.max(0, oldval + jump)));
+            double oldval = vector.get(w);
+            vector.set(w, oldval + change);
         }
         return result;
     }

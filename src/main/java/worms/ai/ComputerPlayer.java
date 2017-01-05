@@ -8,7 +8,8 @@ import worms.model.Model;
 import worms.model.Player;
 
 import java.awt.*;
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Václav Blažej
@@ -18,6 +19,7 @@ public class ComputerPlayer extends Player implements Individual {
     private AiBrain brain;
 
     protected ComputerPlayer() {
+        this("", Color.red, null);
     }
 
     public ComputerPlayer(String name, Color color, AiBrain brain) {
@@ -48,7 +50,7 @@ public class ComputerPlayer extends Player implements Individual {
         AiNeuralBrain brain = (AiNeuralBrain) this.getBrain();
         AiNeuralBrain newBrain = new AiNeuralBrain(brain);
         newBrain.setNetwork(newBrain.getNetwork().mutate());
-        return new ComputerPlayer(this.getName(), this.getColor(), newBrain);
+        return new ComputerPlayer("mutant", this.getColor(), newBrain);
     }
 
     @Override
@@ -57,17 +59,26 @@ public class ComputerPlayer extends Player implements Individual {
         NeuralNetwork b = ((AiNeuralBrain) this.getBrain()).getNetwork();
         Matrix oldMatrix = b.getMatrix();
         NeuralNetwork neuralNetwork = new NeuralNetwork(a);
+        List<Boolean> swap = new ArrayList<>();
         Matrix matrix = neuralNetwork.getMatrix();
-        Random random = new Random();
         for (int i = 0; i < matrix.height; i++) {
-            for (int j = 0; j < matrix.width; j++) {
-                if (random.nextInt() % 2 == 0) {
+            swap.add(Common.getRandomBoolean(0.5));
+        }
+        for (int i = 0; i < matrix.height; i++) {
+            if (swap.get(i)) {
+                for (int j = 0; j < matrix.width; j++) {
                     matrix.getMatrix().get(i).set(j, oldMatrix.getMatrix().get(i).get(j));
                 }
             }
         }
         AiNeuralBrain brain = new AiNeuralBrain();
         brain.setNetwork(neuralNetwork);
-        return new ComputerPlayer(this.getName(), Common.randomColor(), brain);
+        return new ComputerPlayer("cross", Common.randomColor(), brain);
+    }
+
+    @Override
+    public double distance(Individual individual) {
+        final NeuralNetwork network = ((AiNeuralBrain) (((ComputerPlayer) individual).brain)).getNetwork();
+        return ((AiNeuralBrain) brain).getNetwork().getMatrix().distance(network.getMatrix());
     }
 }

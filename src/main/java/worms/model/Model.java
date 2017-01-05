@@ -9,9 +9,9 @@ import worms.ai.ComputerPlayer;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Patrik Faistaver
@@ -20,26 +20,25 @@ import java.util.Random;
  */
 public final class Model {
 
-    private final ArrayList<Player> players;
+    private final List<Player> players;
     private final Settings settings;
-    private final Random random = new Random();
     private ArrayList<Scenario> scenarios;
-    private BufferedImage image;
+    private CachedBitmap image;
 
     public Model(Settings settings) {
         this.settings = settings;
         this.scenarios = new ArrayList<>();
-        this.players = new ArrayList<>();
+        this.players = Collections.synchronizedList(new ArrayList<>());
         setupScenarios();
     }
 
     private void setupScenarios() {
         this.scenarios.clear();
         Point.Double origin = new Point.Double(settings.getWindowWidth() / 2, settings.getWindowHeight() / 2);
-        BufferedImage bufferedImage = new BufferedImage(settings.getWindowWidth() + 1, settings.getWindowHeight() + 1, BufferedImage.TYPE_INT_RGB);
+//        CachedBitmap bufferedImage = new CachedBitmap(settings.getWindowWidth() + 1, settings.getWindowHeight() + 1, CachedBitmap.TYPE_INT_RGB);
 //        Scenario basicScenario = new Scenario(origin, image = bufferedImage, Common.getRandomRadian());
         for (int i = 0; true; i++) {
-            BufferedImage image = Common.loadImage("scenarios/" + (i + 1) + ".bmp");
+            CachedBitmap image = Common.loadImage("scenarios/" + (i + 1) + ".bmp");
             if (image == null) {
                 break;
             }
@@ -59,7 +58,7 @@ public final class Model {
         }
     }
 
-    public ArrayList<Player> getPlayers() {
+    public List<Player> getPlayers() {
         return players;
     }
 
@@ -76,11 +75,11 @@ public final class Model {
         players.get(playerId).getWorm().setDirection(direction);
     }
 
-    public BufferedImage getImage() {
+    public CachedBitmap getImage() {
         return image;
     }
 
-    public double getDistance(Point2D.Double point, Point2D.Double direction) {
+    public Point2D.Double getCollisionPoint(Point2D.Double point, Point2D.Double direction) {
         Point2D.Double pos = new Point2D.Double(point.x, point.y);
         double size = direction.distance(0, 0);
         direction.x /= size;
@@ -94,15 +93,14 @@ public final class Model {
             pos.x += jump * direction.x;
             pos.y -= jump * direction.y;
         }
-//        lines.add(new Line2D.Double(point.x, point.y, pos.x, pos.y));
-        return pos.distance(point);
+        return pos;
     }
 
     public void reset(int scenarioId) {
         Scenario scenario = scenarios.get(scenarioId);
         loadScenario(scenario);
-        double degreeChange = 2 * Math.PI / settings.getPlayerCount();
-        double degree = scenario.degree;
+        double degreeChange = 2 * Math.PI / 2;
+        double degree = 0;
         Point2D.Double origin = scenario.origin;
         for (Player player : players) {
             Worm worm = player.getWorm();
@@ -113,8 +111,8 @@ public final class Model {
             player.setLost(false);
             degree += degreeChange;
             if (player instanceof ComputerPlayer) {
-                ComputerPlayer player1 = (ComputerPlayer) player;
-                player1.getBrain().reset();
+                ComputerPlayer cplayer = (ComputerPlayer) player;
+                cplayer.getBrain().reset();
             }
         }
     }
@@ -131,7 +129,7 @@ public final class Model {
     }
 
     public void loadScenario(Scenario scenario) {
-        image = Common.deepCopy(scenario.image);
+        image = scenario.image.deepCopy();
     }
 
     public int getNumberOfScenarios() {

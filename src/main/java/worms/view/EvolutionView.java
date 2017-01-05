@@ -21,6 +21,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,19 +32,23 @@ public class EvolutionView extends JPanel implements ActionListener {
 
     private final JLabel turn = new JLabel();
     private final Timer refreshGraphics = new Timer(200, this);
-    private int iterations = 0;
+    private final DefaultListModel<Player> playersModel;
     private Controller controller;
+    private View view;
     private Model model;
     private Settings settings;
     private GeneticEvolution geneticEvolution;
+    private Integer lastEpoch = 0;
 
-    public EvolutionView(Model model, Controller controller, Settings settings, EvolutionWrapper evolution) {
+    public EvolutionView(View view, Model model, Controller controller, Settings settings, EvolutionWrapper evolution) {
+        this.view = view;
         this.model = model;
         this.controller = controller;
         this.settings = settings;
         this.geneticEvolution = evolution.getEvolutionStrategy();
         this.setPreferredSize(new Dimension(400, 600));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.playersModel = new DefaultListModel<>();
 
         this.add(turn);
         this.add(createPlayerList());
@@ -58,61 +64,61 @@ public class EvolutionView extends JPanel implements ActionListener {
 
     private JComponent graphicsControls() {
         JPanel res = new JPanel();
-        res.setLayout(new FlowLayout(FlowLayout.CENTER, 2, 2));
+        res.setLayout(new BoxLayout(res, BoxLayout.Y_AXIS));
         res.add(new JLabel("Graphics settings"));
-        final CustomCheckbox showRays = new CustomCheckbox("on", "off", false);
-        showRays.addItemListener(e -> {
-//            model.(e.getStateChange() == ItemEvent.SELECTED);
-        });
-        res.add(showRays);
-        final CustomCheckbox skipGraphics = new CustomCheckbox("on", "off", true);
-        skipGraphics.addItemListener(e -> {
-            controller.setGRAPHICS(e.getStateChange() == ItemEvent.SELECTED);
-        });
-        res.add(skipGraphics);
+        res.add(getCheckboxWithLabel("Show rays",
+                new CustomCheckbox("on", "off", false),
+                e -> view.setShowPoints(e.getStateChange() == ItemEvent.SELECTED)));
+        res.add(getCheckboxWithLabel("Show graphics",
+                new CustomCheckbox("on", "off", true),
+                e -> controller.setGRAPHICS(e.getStateChange() == ItemEvent.SELECTED)));
         res.setBorder(new BevelBorder(BevelBorder.LOWERED));
         return res;
+    }
+
+    private JPanel getCheckboxWithLabel(String text, CustomCheckbox checkbox, ItemListener listener) {
+        final JPanel panel = new JPanel();
+        panel.add(new JLabel(text + ":"));
+        checkbox.addItemListener(listener);
+        panel.add(checkbox);
+        return panel;
     }
 
     private JComponent createSimulationControls() {
         JPanel res = new JPanel();
         res.setLayout(new BoxLayout(res, BoxLayout.Y_AXIS));
         res.add(new JLabel("Simulation settings"));
-        Integer[] list = {1, 2, 3, 4, 5};
-        JComboBox<Integer> choosePlayerCount = new JComboBox<>(list);
-        res.add(choosePlayerCount);
-        choosePlayerCount.addActionListener(e -> {
-            final Integer playerCount = (Integer) choosePlayerCount.getSelectedItem();
-            settings.setPlayerCount(playerCount);
-        });
-        final JSlider speedSlider = new CustomSlider("Speed", 2, 100, 15);
-        speedSlider.addChangeListener(evt -> {
-            controller.setSimulationDelay(speedSlider.getValue());
-        });
+        final JSlider speedSlider = new CustomSlider("Speed", 2, 1000, 150);
+        speedSlider.addChangeListener(evt -> controller.setSimulationDelay(speedSlider.getValue()));
         res.add(speedSlider);
-        final CustomCheckbox runButton = new CustomCheckbox("run", "stop", false);
-        runButton.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-                controller.startSimulationInThread();
+//        final CustomCheckbox runButton = new CustomCheckbox("run", "stop", false);
+//        runButton.addItemListener(e -> {
+//            if (e.getStateChange() == ItemEvent.SELECTED) {
+//                controller.startSimulationInThread();
+//            } else {
+//                controller.endSimulation();
+//            }
+//        });
+//        res.add(runButton);
+        CustomButton loadBest = new CustomButton("show best", event -> geneticEvolution.evaluateBest());
+        res.add(loadBest);
+        CustomButton startMatch = new CustomButton("match", event -> {
+            ArrayList<Player> players = new ArrayList<>();
+            geneticEvolution.sortPopulation();
+            List<Individual> population = geneticEvolution.getPopulation();
+            if (population.size() >= 2) {
+                players.add((Player) population.get(population.size() - 1));
+                players.add((Player) population.get(population.size() - 2));
+                new Thread(() -> controller.evaluate(players)).start();
             } else {
-                controller.endSimulation();
+                throw new RuntimeException("small population size");
             }
         });
-        res.add(runButton);
+        res.add(startMatch);
         CustomButton load = new CustomButton("load", event -> geneticEvolution.setPopulation(Common.load("population")));
         res.add(load);
         CustomButton save = new CustomButton("save", event -> Common.save(geneticEvolution.getPopulation(), "population"));
         res.add(save);
-//        final JSlider iterationSlider = new JSlider(1, 10000, 500);
-//        iterationSlider.addChangeListener(evt -> {
-//            iterations = iterationSlider.getValue();
-//            runButton.setText("Start " + iterations + " iterations");
-//        });
-//        ChangeEvent ce = new ChangeEvent(iterationSlider);
-//        for (ChangeListener cl : iterationSlider.getChangeListeners()) {
-//            cl.stateChanged(ce);
-//        }
-//        res.add(iterationSlider);
         res.setBorder(new BevelBorder(BevelBorder.LOWERED));
         res.setPreferredSize(new Dimension(220, 200));
         return res;
@@ -121,43 +127,27 @@ public class EvolutionView extends JPanel implements ActionListener {
     private JComponent createGeneticTab() {
         JPanel res = new JPanel(new BorderLayout());
         res.setBorder(new BevelBorder(BevelBorder.LOWERED));
-        final CustomCheckbox runButton = new CustomCheckbox("run", "stop", false);
-        runButton.addItemListener(e -> {
-            geneticEvolution.setRunning(e.getStateChange() == ItemEvent.SELECTED);
-        });
-        res.add(runButton);
+        res.add(getCheckboxWithLabel("Run evolution",
+                new CustomCheckbox("running", "stopped", false),
+                e -> geneticEvolution.setRunning(e.getStateChange() == ItemEvent.SELECTED)));
         return res;
     }
 
-//    private JComponent createDifferentialTab() {
-//        JPanel res = new JPanel(new BorderLayout());
-//        res.setBorder(new BevelBorder(BevelBorder.LOWERED));
-//        return res;
-//    }
-
     private JComponent createPlayerList() {
-        JList<Player> players = new JList<>();
-        players.setModel(new AbstractListModel<Player>() {
-            List<Individual> playerList = geneticEvolution.getPopulation();
-
-            @Override
-            public int getSize() {
-                return playerList.size();
-            }
-
-            @Override
-            public Player getElementAt(int index) {
-                return (Player) playerList.get(index);
-            }
-        });
-        players.setCellRenderer(new DefaultListCellRenderer() {
+        final JList<Player> list = new JList<>(playersModel);
+        list.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        list.setVisibleRowCount(-1);
+        JScrollPane scroll = new JScrollPane(list);
+        scroll.setPreferredSize(new Dimension(280, 120));
+        list.setCellRenderer(new DefaultListCellRenderer() {
             public Component getListCellRendererComponent(
                     JList<?> list,
                     Object value,
                     int index,
                     boolean isSelected,
                     boolean cellHasFocus) {
-                Color color = model.getPlayers().get(index).getColor();
+                Color color = ((Player) value).getColor();
                 setComponentOrientation(list.getComponentOrientation());
 
                 Color bg = null;
@@ -209,14 +199,25 @@ public class EvolutionView extends JPanel implements ActionListener {
                 return this;
             }
         });
-        JScrollPane scroll = new JScrollPane(players);
-        scroll.setPreferredSize(new Dimension(280, 120));
-        scroll.setBorder(new BevelBorder(BevelBorder.LOWERED));
         return scroll;
+    }
+
+    private void reloadPopulation() {
+        final List<Individual> population = geneticEvolution.getPopulation();
+        playersModel.clear();
+        for (Individual individual : population) {
+            playersModel.addElement((Player) individual);
+        }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (geneticEvolution.getEpoch() != lastEpoch) {
+            reloadPopulation();
+            lastEpoch = geneticEvolution.getEpoch();
+        }
         turn.setText("" + controller.getTurn());
+//        players.
+        //        this.repaint();
     }
 }

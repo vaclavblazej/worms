@@ -37,8 +37,8 @@ public final class Settings implements Serializable {
         windowWidth = 800;
         windowHeight = 600;
         populationSize = 100;
-        childrenSize = 200;
-        moveAngleChange = 2 * Math.PI / 180.;
+        childrenSize = 400;
+        moveAngleChange = 2 * Math.PI / 120.;
         names = new ArrayList<>();
         leftMap = new ArrayList<>();
         rightMap = new ArrayList<>();

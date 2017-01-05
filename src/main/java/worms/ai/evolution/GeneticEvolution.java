@@ -7,6 +7,7 @@ import worms.ai.ComputerPlayer;
 import worms.controller.Controller;
 import worms.model.Model;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -41,60 +42,84 @@ public class GeneticEvolution extends EvolutionStrategy {
 
     @Override
     public void runIteration() {
-//        for (Individual individual : population) {
-//            evaluate(individual);
-//        }
-//        sortPopulation();
-//        Individual best = population.get(population.size() - 1);
         for (int i = 0; i < settings.getPopulationSize(); i++) {
-            population.add(new ComputerPlayer("test", Common.randomColor(), new AiNeuralBrain()));
+            final ComputerPlayer individual = new ComputerPlayer("initial", Common.randomColor(), new AiNeuralBrain());
+            this.evaluate(individual);
+            population.add(individual);
         }
         while (!stopCondition()) {
-            epoch++;
-//            try {
-//                Thread.sleep(10);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
             List<Individual> parents = selectParents();
             List<Individual> children = new ArrayList<>();
-            for (int i = 0; i < settings.getChildrenSize(); i++) {
-                if (Common.getRandomBoolean(0.1)) {
+            for (int i = 0; i < settings.getChildrenSize() / 20; i++) {
+                children.add(new ComputerPlayer("new", Color.red, new AiNeuralBrain()));
+            }
+            for (int i = children.size(); i < settings.getChildrenSize(); i++) {
+                if (Common.getRandomBoolean(0.9)) { // cross
                     Individual a = parents.get(Common.random.nextInt(settings.getPopulationSize()));
                     Individual b = parents.get(Common.random.nextInt(settings.getPopulationSize()));
-                    Individual ind = a.cross(b).mutate();
+                    Individual ind = a.cross(b);
+                    children.add(ind);
+                } else { // mutation
+                    Individual a = parents.get(Common.random.nextInt(settings.getPopulationSize()));
+                    Individual ind = a.mutate();
                     children.add(ind);
                 }
             }
-            children.addAll(population); // compete with parents
 //            List<Double> childrenProbabilities = children.stream().map(this::evaluate).collect(Collectors.toList());
             List<Double> childrenProbabilities = new ArrayList<>();
-            double c = children.get(children.size() - 1).fitness() / children.size();
+
             for (Individual child : children) {
                 this.evaluate(child);
-                childrenProbabilities.add(c + child.fitness());
+            }
+            children.addAll(population); // compete with parents
+            final int fitBest = population.get(population.size() - 1).fitness() / population.size();
+            children.sort(Comparator.comparingInt(Individual::fitness));
+            double c = 1;
+            for (Individual child : children) {
+                childrenProbabilities.add(c * fitBest + child.fitness());
                 c++;
             }
-            children.sort(Comparator.comparingInt(Individual::fitness));
-            population.sort(Comparator.comparingInt(Individual::fitness));
-            System.out.print("children: ");
-            for (Individual child : children) {
-                System.out.print(child.fitness() + " ");
-            }
-            System.out.println();
-            List<Individual> newGeneration = new ArrayList<>();
-            newGeneration.add(elitism.select(children, childrenProbabilities));
-            while (newGeneration.size() < settings.getPopulationSize()) {
-                newGeneration.add(strategy.select(children, childrenProbabilities));
-            }
-            System.out.print("population: ");
-            for (Individual child : population) {
-                System.out.print(child.fitness() + " ");
-            }
-            System.out.println();
-            setPopulation(newGeneration);
-        }
 
+            List<Individual> newGeneration = new ArrayList<>();
+            // classical roulette
+            for (int i = 0; i < settings.getPopulationSize() / 2; i++) {
+                final Individual select = strategy.select(children, childrenProbabilities);
+                newGeneration.add(select);
+            }
+            // choose elite which is not similar to other individuals
+            for (int i = 0; i < settings.getPopulationSize() / 4; i++) {
+                final Individual select = elitism.select(children, childrenProbabilities);
+                final int q = children.indexOf(select);
+                double mn = 1000000;
+                for (Individual individual : newGeneration) {
+                    if (individual != select && individual.fitness() == select.fitness()) {
+                        mn = Math.min(mn, select.distance(individual));
+                    }
+                }
+                if (mn > 0.001) {
+                    newGeneration.add(select);
+                }
+                children.remove(q);
+                childrenProbabilities.remove(q);
+            }
+            while (newGeneration.size() < settings.getPopulationSize()) {
+                final ComputerPlayer individual = new ComputerPlayer("new", new Color(44, 195, 45), new AiNeuralBrain());
+                evaluate(individual);
+                newGeneration.add(individual);
+            }
+
+            setPopulation(newGeneration);
+            printPopulation();
+            epoch++;
+        }
+    }
+
+    private void printPopulation() {
+        sortPopulation();
+        System.out.println(epoch + " "
+                + population.get(population.size() - 1).fitness() + " "
+                + population.get(population.size() / 2).fitness() + " "
+                + population.get(0).fitness());
     }
 
     private List<Individual> selectParents() {
@@ -105,4 +130,7 @@ public class GeneticEvolution extends EvolutionStrategy {
         return !running;
     }
 
+    public int getEpoch() {
+        return epoch;
+    }
 }

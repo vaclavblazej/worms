@@ -10,10 +10,10 @@ import java.awt.image.BufferedImage;
 public final class Scenario {
 
     public Point.Double origin;
-    public BufferedImage image;
+    public CachedBitmap image;
     public double degree;
 
-    public Scenario(Point.Double origin, BufferedImage image, double degree) {
+    public Scenario(Point.Double origin, CachedBitmap image, double degree) {
         this.origin = origin;
         this.image = image;
         this.degree = degree;

@@ -7,7 +7,7 @@ import java.util.Random;
 /**
  * @author Václav Blažej
  */
-public class Vector extends ArrayList<Double> implements Serializable{
+public class Vector extends ArrayList<Double> implements Serializable {
 
     public Vector(Vector copy) {
         this.clear();
@@ -26,7 +26,7 @@ public class Vector extends ArrayList<Double> implements Serializable{
         Random random = new Random();
         Vector result = new Vector(size);
         for (int i = 0; i < size; i++) {
-            result.set(i, random.nextDouble());
+            result.set(i, random.nextDouble() * random.nextInt(16) * (random.nextBoolean() ? 1 : -1));
         }
         return result;
     }

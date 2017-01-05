@@ -5,6 +5,7 @@ import worms.model.Model;
 import worms.model.Player;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public abstract class EvolutionStrategy {
     public EvolutionStrategy(Controller controller, Model model) {
         this.controller = controller;
         this.model = model;
-        this.population = new ArrayList<>();
+        this.population = Collections.synchronizedList(new ArrayList<>());
     }
 
     public abstract void runIteration();
@@ -42,5 +43,11 @@ public abstract class EvolutionStrategy {
     public void setPopulation(List<Individual> newPopulation) {
         population.clear();
         population.addAll(newPopulation);
+    }
+
+    public void evaluateBest() {
+        sortPopulation();
+        Individual individual = population.get(population.size() - 1);
+        new Thread(() -> controller.evaluate((Player) individual)).start();
     }
 }
