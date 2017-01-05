@@ -61,18 +61,30 @@ public class ComputerPlayer extends Player implements Individual {
         NeuralNetwork neuralNetwork = new NeuralNetwork(a);
         List<Boolean> swap = new ArrayList<>();
         Matrix matrix = neuralNetwork.getMatrix();
-        for (int i = 0; i < matrix.height; i++) {
-            swap.add(Common.getRandomBoolean(0.5));
-        }
-        for (int i = 0; i < matrix.height; i++) {
-            if (swap.get(i)) {
-                for (int j = 0; j < matrix.width; j++) {
-                    matrix.getMatrix().get(i).set(j, oldMatrix.getMatrix().get(i).get(j));
+        if (Common.getRandomBoolean(0.5)) {
+            for (int i = 0; i < matrix.height; i++) {
+                swap.add(Common.getRandomBoolean(Common.random.nextDouble()));
+            }
+            for (int i = 0; i < matrix.height; i++) {
+                if (swap.get(i)) {
+                    for (int j = 0; j < matrix.width; j++) {
+                        matrix.getMatrix().get(i).set(j, oldMatrix.getMatrix().get(i).get(j));
+                    }
                 }
             }
+            AiNeuralBrain brain = new AiNeuralBrain();
+            brain.setNetwork(neuralNetwork);
+        } else {
+            for (int i = 0; i < matrix.height; i++) {
+                for (int j = 0; j < matrix.width; j++) {
+                    if (Common.random.nextInt() % 2 == 0) {
+                        matrix.getMatrix().get(i).set(j, oldMatrix.getMatrix().get(i).get(j));
+                    }
+                }
+            }
+            AiNeuralBrain brain = new AiNeuralBrain();
+            brain.setNetwork(neuralNetwork);
         }
-        AiNeuralBrain brain = new AiNeuralBrain();
-        brain.setNetwork(neuralNetwork);
         return new ComputerPlayer("cross", Common.randomColor(), brain);
     }
 
@@ -80,5 +92,10 @@ public class ComputerPlayer extends Player implements Individual {
     public double distance(Individual individual) {
         final NeuralNetwork network = ((AiNeuralBrain) (((ComputerPlayer) individual).brain)).getNetwork();
         return ((AiNeuralBrain) brain).getNetwork().getMatrix().distance(network.getMatrix());
+    }
+
+    @Override
+    public Individual copy() {
+        return new ComputerPlayer(getName(), getColor(), new AiNeuralBrain((AiNeuralBrain) getBrain()));
     }
 }

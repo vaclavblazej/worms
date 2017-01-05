@@ -14,4 +14,6 @@ public interface Individual extends Serializable {
     Individual cross(Individual a);
 
     double distance(Individual individual);
+
+    Individual copy();
 }
