@@ -1,7 +1,6 @@
 package worms;
 
 import worms.ai.evolution.EvolutionWrapper;
-import worms.ai.evolution.GeneticEvolution;
 import worms.controller.Controller;
 import worms.model.Model;
 import worms.view.GameWindow;

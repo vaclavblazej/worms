@@ -1,13 +1,14 @@
 package worms.controller;
 
+import worms.Settings;
+import worms.model.Direction;
+import worms.model.Model;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import worms.Settings;
-import worms.model.Direction;
-import worms.model.Model;
 
 /**
  *

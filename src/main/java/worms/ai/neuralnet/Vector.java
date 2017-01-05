@@ -1,5 +1,7 @@
 package worms.ai.neuralnet;
 
+import worms.Common;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
@@ -26,7 +28,11 @@ public class Vector extends ArrayList<Double> implements Serializable {
         Random random = new Random();
         Vector result = new Vector(size);
         for (int i = 0; i < size; i++) {
-            result.set(i, random.nextDouble() * random.nextInt(16) * (random.nextBoolean() ? 1 : -1));
+            if(Common.getRandomBoolean(0.2)) {
+                result.set(i, random.nextDouble() * random.nextInt(16) * (random.nextBoolean() ? 1 : -1));
+            }else{
+                result.set(i, 0.0);
+            }
         }
         return result;
     }

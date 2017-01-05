@@ -27,7 +27,7 @@ public class AiNeuralBrain extends AiBrain {
     }
 
     public AiNeuralBrain() {
-        this.network = new NeuralNetwork(RAYS, 0, 2);
+        this.network = new NeuralNetwork(RAYS, 10, 2);
         this.points = Collections.synchronizedList(new ArrayList<>());
     }
 
